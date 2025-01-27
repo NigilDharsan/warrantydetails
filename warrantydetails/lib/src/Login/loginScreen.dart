@@ -319,18 +319,18 @@ class _LoginscreenState extends State<Loginscreen> {
                                                   fontSize: 16,
                                                   color: Colors.grey[500]),
                                             ),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'enter_email'
-                                                    .tr; // Localized error
-                                              }
-                                              if (_isValidEmail(value)) {
-                                                return 'valid_email'
-                                                    .tr; // Localized error
-                                              }
-                                              return null;
-                                            },
+                                            // validator: (value) {
+                                            //   if (value == null ||
+                                            //       value.isEmpty) {
+                                            //     return 'enter_email'
+                                            //         .tr; // Localized error
+                                            //   }
+                                            //   if (_isValidEmail(value)) {
+                                            //     return 'valid_email'
+                                            //         .tr; // Localized error
+                                            //   }
+                                            //   return null;
+                                            // },
                                           ),
                                         ),
                                         const SizedBox(height: 20),
@@ -353,16 +353,16 @@ class _LoginscreenState extends State<Loginscreen> {
                                                   fontSize: 16,
                                                   color: Colors.grey[500]),
                                             ),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return "Enter Your Password";
-                                              }
-                                              if (value.length < 6) {
-                                                return "Password must be at least 6 characters";
-                                              }
-                                              return null;
-                                            },
+                                            // validator: (value) {
+                                            //   if (value == null ||
+                                            //       value.isEmpty) {
+                                            //     return "Enter Your Password";
+                                            //   }
+                                            //   if (value.length < 6) {
+                                            //     return "Password must be at least 6 characters";
+                                            //   }
+                                            //   return null;
+                                            // },
                                           ),
                                         ),
                                         // const SizedBox(height: 10),
