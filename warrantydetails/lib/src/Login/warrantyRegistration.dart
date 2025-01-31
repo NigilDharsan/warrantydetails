@@ -18,6 +18,8 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
     'Chase No': TextEditingController(),
     'Controller': TextEditingController(),
     'Motor': TextEditingController(),
+    'Battery': TextEditingController(),
+    'Charger': TextEditingController(),
     'Purchase Date': TextEditingController(),
     'Customer Name': TextEditingController(),
     'Phone No': TextEditingController(),
@@ -28,6 +30,7 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
   final Map<String, TextEditingController> battery = {
     'Invoice No': TextEditingController(),
     'S.no': TextEditingController(),
+    'Remarks': TextEditingController(),
     'Model': TextEditingController(),
     'Purchase Date': TextEditingController(),
     'Customer Name': TextEditingController(),
@@ -63,7 +66,6 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
   void submitData() {
     Map<String, String> selectedData = getSelectedData();
     print("Submitted Data for $selectedCategory: $selectedData");
-
   }
 
   @override
@@ -73,13 +75,13 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
         backgroundColor: Colors.red,
         title: Center(
           child: Text(
-          'Warranty Registration',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+            'Warranty Registration',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-        ),
         ),
       ),
       body: SingleChildScrollView(
@@ -88,12 +90,14 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             Text('Select Your Product',
-             style: TextStyle(
-               fontSize: 13,
-               color: Colors.red,
-               fontWeight: FontWeight.bold,
-             ),),
+              Text(
+                'Select Your Product',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               SizedBox(height: 5),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -128,36 +132,39 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
               const SizedBox(height: 10),
               showForm
                   ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (selectedCategory == "Vehicle")
-                    ...vehicle.entries.map((entry) => _buildEditableRow(entry.key, entry.value)),
-                  if (selectedCategory == "Battery")
-                    ...battery.entries.map((entry) => _buildEditableRow(entry.key, entry.value)),
-                  if (selectedCategory == "Charger")
-                    ...charger.entries.map((entry) => _buildEditableRow(entry.key, entry.value)),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (selectedCategory == "Vehicle")
+                          ...vehicle.entries.map((entry) =>
+                              _buildEditableRow(entry.key, entry.value)),
+                        if (selectedCategory == "Battery")
+                          ...battery.entries.map((entry) =>
+                              _buildEditableRow(entry.key, entry.value)),
+                        if (selectedCategory == "Charger")
+                          ...charger.entries.map((entry) =>
+                              _buildEditableRow(entry.key, entry.value)),
+                        const SizedBox(height: 20),
+                        Center(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
+                            onPressed: submitData,
+                            child: const Text(
+                              "Submit",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      onPressed: submitData,
-                      child: const Text(
-                        "Submit",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )
+                      ],
+                    )
                   : const SizedBox(height: 10),
             ],
           ),

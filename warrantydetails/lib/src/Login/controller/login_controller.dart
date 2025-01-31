@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:warrantydetails/src/Login/Model/LoginModel.dart';
 import 'package:warrantydetails/src/Login/repository/login_repo.dart';
 
 class LoginController extends GetxController implements GetxService {
@@ -11,25 +14,29 @@ class LoginController extends GetxController implements GetxService {
   bool get isLoading => _isLoading;
   bool hasMoreItems = true;
 
-  // Future<IssuesTypeModel?> getIssuesType() async {
-  //   _isLoading = true;
-  //   loaderController.showLoaderAfterBuild(_isLoading);
+  LoginModel? loginModel;
 
-  //   final response = await compliantRepo.getIssuesType();
-  //   if (response != null && response.statusCode == 200) {
-  //     issuesTypeModeldata = IssuesTypeModel.fromJson(response.body);
+  var signInEmailController = TextEditingController();
+  var signInPasswordController = TextEditingController();
 
-  //     print("GET UCO DETAIL RESPONSE ${response.body}");
-  //     _isLoading = false;
-  //     loaderController.showLoaderAfterBuild(_isLoading);
+  _hideKeyboard() => FocusManager.instance.primaryFocus?.unfocus();
 
-  //     update();
-  //     return issuesTypeModeldata;
-  //   }
+  Future<void> login() async {
+    _hideKeyboard();
+    _isLoading = true;
+    update();
 
-  //   _isLoading = false;
-  //   loaderController.showLoaderAfterBuild(_isLoading);
+    Response? response = await loginRepo.login(
+        email: signInEmailController.value.text,
+        password: signInPasswordController.value.text);
+    if (response != null && response.statusCode == 200) {
+      signInEmailController.clear();
+      signInPasswordController.clear();
 
-  //   update();
-  // }
+      loginModel = LoginModel.fromJson(response.body);
+    }
+
+    _isLoading = false;
+    update();
+  }
 }

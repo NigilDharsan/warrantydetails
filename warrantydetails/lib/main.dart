@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:warrantydetails/src/Login/loginScreen.dart';
 import 'package:warrantydetails/utils/Language/Language.dart';
 import 'package:warrantydetails/utils/Language/LocaleString.dart';
+import 'package:warrantydetails/utils/Provider/client_api.dart';
+import 'package:warrantydetails/utils/config.dart';
+import 'package:warrantydetails/utils/initial_binding/initial_binding.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Locale initialLocale = await getSavedLocale(); // Load saved locale
   // Get.put(LoaderController()); // Keep the controller alive
+
+  final sharedPreferences = await SharedPreferences.getInstance();
+  Get.lazyPut(() => sharedPreferences);
+  Get.lazyPut(() => ApiClient(
+      appBaseUrl: Config.baseUrl, sharedPreferences: sharedPreferences));
 
   runApp(MyApp(
     initialLocale: initialLocale,
@@ -28,6 +37,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Warranty Details',
+      initialBinding: InitialBinding(),
+
       theme: ThemeData(
         textSelectionTheme: TextSelectionThemeData(
           cursorColor: Colors.red,

@@ -75,7 +75,7 @@ class Config {
 class _Config {
   static const String environment = 'dev';
   static const String loginUrl = 'https://d-byufuel-auth.azurewebsites.net/';
-  static const String baseUrl = 'https://d-byufuel-api.azurewebsites.net/';
+  static const String baseUrl = 'https://warranty.shiningdawn.in/api/';
   static const String masterUrl =
       'https://d-byufuel-gateway.azure-api.net/dev/';
 
@@ -100,7 +100,7 @@ class _Config {
       'realms/byufuel-dev/protocol/openid-connect/token';
 
   static Map<dynamic, dynamic> debugConstants = {
-    loginUrl: "https://d-byufuel-auth.azurewebsites.net/",
+    loginUrl: "https://warranty.shiningdawn.in/api/",
     environment: "dev",
     baseUrl: 'https://d-byufuel-api.azurewebsites.net/',
     masterUrl: 'https://d-byufuel-gateway.azure-api.net/dev/',

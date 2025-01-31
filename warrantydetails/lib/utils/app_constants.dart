@@ -1,38 +1,7 @@
 class AppConstants {
   static const String appName = 'Byufuel';
 
-  static const String configUrl = 'configs';
-  static const String onBoards = 'on-boards';
-  static const String socialLoginUrl = 'social-login';
-
-  static const String mobileDeviceUrl = 'api/mobile-devices';
-  static const String signupVerificationUrl =
-      'api/uam/users/sign-up-verification';
-  static const String registerUrl = 'api/uam/registration';
-  static const String createAddressUrl =
-      'api/uam/account-addresses/create-address';
-  static const String updateAddressUrl = 'api/uam/registration';
-
-  static const String bankAccountVerifyUrl = 'api/razorpay/fund-accounts';
-
-  static const String addBankAccountUrl = 'api/bank-account-details';
-  static const String defaultAddressUrl =
-      "api/uam/account-addresses/default-address";
-
-  static const String addressList = "api/uam/account-addresses/";
-  static const String accountDetailUrl = "api/bank-account-details/";
-  //
-  static const String registerWithPhone = 'register-by-phone';
-  static const String verifyPhoneOTP = 'verify-phone-otp';
-  static const String resendPhoneOTP = 'resend-phone-otp';
-  static const String getPhoneLoginOTP = 'get-login-otp';
-  static const String verifyLoginPhoneOTP = 'verify-login-otp';
-  static const String verifyEmailOTP = 'email-verify';
-  static const String resendEmailOTP = 'resend-email-otp';
-  static const String forgotPasswordOTP = 'api/uam/otp/generate';
-
-  // static const String verifyOTPForForgotPassword = 'verify-otp';
-  static const String resetPassword = 'api/uam/users/reset-password';
+  static const String loginUrl = 'login';
 
   //home
   static const String homeScreen = 'home-screen';
