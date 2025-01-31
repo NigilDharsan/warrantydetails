@@ -21,8 +21,8 @@ class _WarrantydetailsState extends State<Warrantydetails> {
     'CH.No': 'CH-4567',
     'Motor': 'Motor123',
     'Controller': 'Con-3456',
-    'Charge': 'Fast Charge',
-    'Battery.No': 'BAT-1122',
+    // 'Charge': 'Fast Charge',
+    // 'Battery.No': 'BAT-1122',
     'Customer Name': 'Raja',
     'Address': '1/123, Raja Street',
     'Phone Number': '+91-9876543210',
@@ -233,6 +233,44 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
                     color: const PdfColor.fromInt(0xFF0000), // Red color
+                  ),
+                ),
+                pw. SizedBox(height: 15),
+                pw.Divider(color: const PdfColor(0.5, 0.5, 0.5)),
+                pw.Container(
+                  decoration: pw.BoxDecoration(
+                    color: const PdfColor(0.9, 0.9, 0.9),
+                    borderRadius: pw.BorderRadius.circular(5),
+                  ),
+                  padding: const pw.EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 10,
+                  ),
+                  child: pw.Row(
+                    children: [
+                      pw.Expanded(
+                        flex: 2,
+                        child: pw.Text(
+                          'Description',
+                          style: pw.TextStyle(
+                            fontWeight: pw.FontWeight.bold,
+                            fontSize: 14,
+                            color: const PdfColor(0, 0, 0),
+                          ),
+                        ),
+                      ),
+                      pw.Expanded(
+                        flex: 2,
+                        child: pw.Text(
+                          'Items',
+                          style: pw.TextStyle(
+                            fontSize: 14,
+                            color: const PdfColor(0, 0, 0),
+                          ),
+                          textAlign: pw.TextAlign.left,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 pw.SizedBox(height: 15),
