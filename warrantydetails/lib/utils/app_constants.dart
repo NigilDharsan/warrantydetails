@@ -2,6 +2,7 @@ class AppConstants {
   static const String appName = 'Byufuel';
 
   static const String loginUrl = 'login';
+  static const String registrationUrl = 'details';
 
   //home
   static const String homeScreen = 'home-screen';

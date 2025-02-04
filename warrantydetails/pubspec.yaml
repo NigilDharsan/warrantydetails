@@ -44,6 +44,7 @@ dependencies:
   path:
   intl:
   shared_preferences:
+  dropdown_button2:
 
 dev_dependencies:
   flutter_test:

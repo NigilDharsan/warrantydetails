@@ -23,4 +23,14 @@ class LoginRepo {
     return await apiClient.postLoginData(AppConstants.loginUrl, body,
         headers: headers);
   }
+
+  Future<Response?> registration(
+      {required Map<String, dynamic> body} ) async {
+    Map<String, String> headers = {
+      'Accept': 'application/json',
+    };
+
+    return await apiClient.postLoginData(AppConstants.registrationUrl, body,
+        headers: headers);
+  }
 }

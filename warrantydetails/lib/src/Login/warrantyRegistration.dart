@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../widget/Common_Warranty_UI.dart';
+import 'controller/login_controller.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class Warrantyregistration extends StatefulWidget {
   const Warrantyregistration({super.key});
@@ -8,88 +12,41 @@ class Warrantyregistration extends StatefulWidget {
 }
 
 class _WarrantyregistrationState extends State<Warrantyregistration> {
-  String? selectedCategory = "Vehicle"; // Default selection
-  bool showForm = true;
-
-  final Map<String, TextEditingController> vehicle = {
-    'Invoice No': TextEditingController(),
-    'S.no': TextEditingController(),
-    'Model': TextEditingController(),
-    'Chase No': TextEditingController(),
-    'Controller': TextEditingController(),
-    'Motor': TextEditingController(),
-    'Battery': TextEditingController(),
-    'Charger': TextEditingController(),
-    'Purchase Date': TextEditingController(),
-    'Customer Name': TextEditingController(),
-    'Phone No': TextEditingController(),
-    'Email id': TextEditingController(),
-    'Address': TextEditingController(),
-  };
-
-  final Map<String, TextEditingController> battery = {
-    'Invoice No': TextEditingController(),
-    'S.no': TextEditingController(),
-    'Remarks': TextEditingController(),
-    'Model': TextEditingController(),
-    'Purchase Date': TextEditingController(),
-    'Customer Name': TextEditingController(),
-    'Phone No': TextEditingController(),
-    'Email id': TextEditingController(),
-    'Address': TextEditingController(),
-  };
-
-  final Map<String, TextEditingController> charger = {
-    'Invoice No': TextEditingController(),
-    'S.no': TextEditingController(),
-    'Model': TextEditingController(),
-    'Purchase Date': TextEditingController(),
-    'Customer Name': TextEditingController(),
-    'Phone No': TextEditingController(),
-    'Email id': TextEditingController(),
-    'Address': TextEditingController(),
-  };
-
-  List<String> categories = ["Vehicle", "Charger", "Battery"];
-
-  Map<String, String> getSelectedData() {
-    if (selectedCategory == "Vehicle") {
-      return vehicle.map((key, value) => MapEntry(key, value.text));
-    } else if (selectedCategory == "Battery") {
-      return battery.map((key, value) => MapEntry(key, value.text));
-    } else if (selectedCategory == "Charger") {
-      return charger.map((key, value) => MapEntry(key, value.text));
-    }
-    return {};
-  }
-
-  void submitData() {
-    Map<String, String> selectedData = getSelectedData();
-    print("Submitted Data for $selectedCategory: $selectedData");
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.red,
-        title: Center(
-          child: Text(
-            'Warranty Registration',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.red,
+          title: Center(
+            child: Text(
+              'Warranty Registration',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+        body:GetBuilder<LoginController>(builder: (controller) {
+          return MainUI(context, controller);
+        }));
+
+
+
+  }
+
+  MainUI(context,controller)
+  {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: controller.formKey, // Use the formKey for validation
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Text(
                 'Select Your Product',
                 style: TextStyle(
@@ -98,109 +55,118 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 5),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  color: Colors.red[50],
-                  border: Border.all(color: Colors.black),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: selectedCategory,
-                    isExpanded: true,
-                    dropdownColor: Colors.red[50],
-                    items: categories.map((String category) {
-                      return DropdownMenuItem<String>(
+              const SizedBox(height: 5),
+
+              Obx(
+                    () => Container(
+                  height: 50,
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    border: Border.all(color: Colors.black, width: 1),
+                    borderRadius:
+                    BorderRadius.circular(10), // Rounded corners
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton2<String>(
+                      value: controller.selectedCategory.value,
+                      isExpanded: true,
+                      dropdownStyleData: DropdownStyleData(
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      iconStyleData: IconStyleData(
+                        icon: Icon(Icons.arrow_drop_down, color: Colors.red),
+                      ),
+                      style: TextStyle(color: Colors.red),
+                      items: controller.categories
+                          .map<DropdownMenuItem<String>>((String category) => DropdownMenuItem<String>(
                         value: category,
                         child: Text(
                           category,
-                          style: const TextStyle(color: Colors.red),
+                          style: const TextStyle(
+                              color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                         ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedCategory = newValue;
-                        showForm = selectedCategory != null;
-                      });
-                    },
+                      ))
+                          .toList(),
+                      onChanged: (String? category) {
+                        if (category != null) {
+                          controller.selectedCategory.value = category;
+                          controller.formKey.currentState?.reset(); // Reset form on category change
+                          controller.update(); // Ensure UI updates
+                          print("Category changed to: $category"); // Debugging
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 10),
-              showForm
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (selectedCategory == "Vehicle")
-                          ...vehicle.entries.map((entry) =>
-                              _buildEditableRow(entry.key, entry.value)),
-                        if (selectedCategory == "Battery")
-                          ...battery.entries.map((entry) =>
-                              _buildEditableRow(entry.key, entry.value)),
-                        if (selectedCategory == "Charger")
-                          ...charger.entries.map((entry) =>
-                              _buildEditableRow(entry.key, entry.value)),
-                        const SizedBox(height: 20),
-                        Center(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                            onPressed: submitData,
-                            child: const Text(
-                              "Submit",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: Colors.white,
-                              ),
-                            ),
+              Obx (
+                      () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (controller.selectedCategory.value == "Vehicle")
+                        ...controller.vehicle.entries.map(
+                              (entry) => EditableRow(
+                            label: entry.key,
+                            textController: entry.value,
+                            selectedCategory: controller.selectedCategory.value,
                           ),
                         ),
-                      ],
-                    )
-                  : const SizedBox(height: 10),
+                      if (controller.selectedCategory.value == "Battery")
+                        ...controller.battery.entries.map(
+                              (entry) => EditableRow(
+                            label: entry.key,
+                            textController: entry.value,
+                            selectedCategory: controller.selectedCategory.value,
+                          ),
+                        ),
+                      if (controller.selectedCategory.value == "Charger")
+                        ...controller.charger.entries.map(
+                              (entry) => EditableRow(
+                            label: entry.key,
+                            textController: entry.value,
+                            selectedCategory: controller.selectedCategory.value,
+                          ),
+                        ),
+                    ],
+                  )),
+              const SizedBox(height: 20),
+              Center(
+                child: GetBuilder<LoginController>( // Wrap the button in GetBuilder to ensure state updates
+                  builder: (controller) {
+                    return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (controller.formKey.currentState!.validate()) {
+                          print("Submit button clicked"); // Debugging
+                          controller.submitData(); // Call the function
+                        }
+                      },
+                      child: const Text(
+                        "Submit",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildEditableRow(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 5),
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.red[50],
-              contentPadding: const EdgeInsets.all(12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.red[100] ?? Colors.red),
-              ),
-            ),
-            style: TextStyle(fontSize: 14, color: Colors.red[400]),
-          ),
-        ],
       ),
     );
   }

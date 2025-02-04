@@ -54,14 +54,14 @@ class _LoginscreenState extends State<Loginscreen> {
               SizedBox(height: 60),
               Row(
                 children: [
-                  SizedBox(width: 100),
+                  SizedBox(width: 85),
                   Expanded(
                     child: Center(
                       // Center the welcome text
                       child: Text(
                         "welcome".tr,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 21,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -117,15 +117,15 @@ class _LoginscreenState extends State<Loginscreen> {
               ),
               Container(
                 width: MediaQuery.sizeOf(context).width,
-                height: 550,
+                // height: 550,
                 color: Colors.red,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height: 100),
+                      SizedBox(height: 80),
                       Container(
-                        height: 450,
+                        height: 480,
                         margin: EdgeInsets.only(bottom: 20),
                         child: islogin
                             ? Padding(
@@ -431,7 +431,6 @@ class _LoginscreenState extends State<Loginscreen> {
                                                           ?.validate() ??
                                                       false) {
                                                     await controller.login();
-
                                                     if (controller.loginModel
                                                             ?.status ==
                                                         "200_OK") {
@@ -439,7 +438,6 @@ class _LoginscreenState extends State<Loginscreen> {
                                                           controller.loginModel
                                                               ?.message,
                                                           isError: true);
-
                                                       Get.offAll(() =>
                                                           const Dashboard());
                                                     } else {
@@ -465,8 +463,8 @@ class _LoginscreenState extends State<Loginscreen> {
                                       ),
                                     ),
                                     Positioned(
-                                      top: 15,
-                                      left: 1,
+                                      top: 18,
+                                      left: -12,
                                       child: Align(
                                         alignment: Alignment.centerLeft,
                                         child: Row(
