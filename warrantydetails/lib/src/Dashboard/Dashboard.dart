@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
+import 'package:warrantydetails/src/Dashboard/controller/warranty_controller.dart';
 import 'package:warrantydetails/src/Dashboard/widget/warrantyListItem.dart';
 import 'package:warrantydetails/src/Login/loginScreen.dart';
 import 'package:warrantydetails/src/WarrantyDetails/warrantyDetails.dart';
@@ -75,60 +76,68 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+        body: GetBuilder<WarrantyController>(
+            initState: (state) => Get.find<WarrantyController>()
+                .getWarrantyData(), // Called when the controller is initialized
+            builder: (controller) {
+              return MainUI(context, controller);
+            }),
+      ),
+    );
+  }
+
+  MainUI(context, controller) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: "Search for items...",
-                          hintStyle: const TextStyle(color: Colors.redAccent),
-                          prefixIcon:
-                              const Icon(Icons.search, color: Colors.redAccent),
-                          filled: true,
-                          fillColor: Colors.red[50],
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        style: const TextStyle(color: Colors.redAccent),
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: "Search for items...",
+                      hintStyle: const TextStyle(color: Colors.redAccent),
+                      prefixIcon:
+                          const Icon(Icons.search, color: Colors.redAccent),
+                      filled: true,
+                      fillColor: Colors.red[50],
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    IconButton(
-                      icon: const Icon(Icons.filter_list,
-                          color: Colors.redAccent),
-                      onPressed: () {
-                        print("Filter icon clicked");
-                      },
-                    ),
-                  ],
+                    style: const TextStyle(color: Colors.redAccent),
+                  ),
                 ),
-                ListView.builder(
-                  shrinkWrap:
-                      true, // Allows ListView to size itself based on content
-                  physics:
-                      const NeverScrollableScrollPhysics(), // Prevents nested scrolling
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                        onTap: () {
-                          Get.to(() => const Warrantydetails());
-                        },
-                        child: warrantyListItems());
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: const Icon(Icons.filter_list, color: Colors.redAccent),
+                  onPressed: () {
+                    print("Filter icon clicked");
                   },
                 ),
               ],
             ),
-          ),
+            ListView.builder(
+              shrinkWrap:
+                  true, // Allows ListView to size itself based on content
+              physics:
+                  const NeverScrollableScrollPhysics(), // Prevents nested scrolling
+              itemCount: controller.warrantyListData?.data?.length ?? 0,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                    onTap: () {
+                      Get.to(() => const Warrantydetails());
+                    },
+                    child: warrantyListItems(
+                        controller.warrantyListData!.data![index]));
+              },
+            ),
+          ],
         ),
       ),
     );

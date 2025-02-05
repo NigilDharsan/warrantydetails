@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:warrantydetails/src/Dashboard/Model/WarrantyListModel.dart';
 
-Widget warrantyListItems() {
+Widget warrantyListItems(WarrantyData warrantyData) {
   return Padding(
     padding: const EdgeInsets.all(5),
     child: Container(
@@ -27,7 +28,7 @@ Widget warrantyListItems() {
             Row(
               children: [
                 Text(
-                  'S.no: 1 ',
+                  'S.no: ${warrantyData.serialNumber}',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 Spacer(),
@@ -47,11 +48,11 @@ Widget warrantyListItems() {
               ],
             ),
             Text(
-              'Model: XYZ123',
+              'Model: ${warrantyData.model}',
               style: TextStyle(fontSize: 14),
             ),
             Text(
-              'CHNO: CH-4567',
+              'CHNO: ${warrantyData.chno}',
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(
@@ -59,11 +60,11 @@ Widget warrantyListItems() {
               child: customDottedLine(),
             ),
             Text(
-              'Customer Name: Raja',
+              'Customer Name: ${warrantyData.customerName}',
               style: TextStyle(fontSize: 14),
             ),
             Text(
-              'Phone Number: 9876543210',
+              'Phone Number: ${warrantyData.phoneNumber}',
               style: TextStyle(fontSize: 14),
             ),
           ],

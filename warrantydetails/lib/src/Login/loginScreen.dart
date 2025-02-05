@@ -433,7 +433,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                                     await controller.login();
                                                     if (controller.loginModel
                                                             ?.status ==
-                                                        "200_OK") {
+                                                        "True") {
                                                       customSnackBar(
                                                           controller.loginModel
                                                               ?.message,

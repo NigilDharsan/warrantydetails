@@ -102,7 +102,7 @@ class _Config {
   static Map<dynamic, dynamic> debugConstants = {
     loginUrl: "https://warranty.shiningdawn.in/api/",
     environment: "dev",
-    baseUrl: 'https://d-byufuel-api.azurewebsites.net/',
+    baseUrl: 'https://warranty.shiningdawn.in/api/',
     masterUrl: 'https://d-byufuel-gateway.azure-api.net/dev/',
     loginToken:
         'Ynl1ZnVlbC1zcGEtY2xpZW50LW1vYi1wd2Q6QWtmb1RNVG1VbVBDNm9XSzBOMmE4ZWFOTklVQU5NdVc=',
@@ -126,7 +126,7 @@ class _Config {
   static Map<dynamic, dynamic> stagingConstants = {
     loginUrl: "https://d-byufuel-auth.azurewebsites.net/",
     environment: "uat",
-    baseUrl: 'https://u-byufuel-api.azurewebsites.net/',
+    baseUrl: 'https://warranty.shiningdawn.in/api/',
     masterUrl: 'https://d-byufuel-gateway.azure-api.net/uat/',
     loginToken:
         'Ynl1ZnVlbC1zcGEtY2xpZW50LW1vYi1wd2Q6dTU0UmwxWXhDaUdHRmtPUXNDeVJuSkpueGNUNVFCZ2Q=',
@@ -150,7 +150,7 @@ class _Config {
   static Map<dynamic, dynamic> prodConstants = {
     loginUrl: "https://d-byufuel-auth.azurewebsites.net/",
     environment: "prod",
-    baseUrl: 'https://u-byufuel-api.azurewebsites.net/',
+    baseUrl: 'https://warranty.shiningdawn.in/api/',
     masterUrl: 'https://d-byufuel-gateway.azure-api.net/uat/',
     loginToken:
         'Ynl1ZnVlbC1zcGEtY2xpZW50LW1vYi1wd2Q6dTU0UmwxWXhDaUdHRmtPUXNDeVJuSkpueGNUNVFCZ2Q=',

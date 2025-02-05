@@ -104,24 +104,22 @@ class LoginController extends GetxController implements GetxService {
       Map<String, TextEditingController> activeControllers =
           getActiveControllers();
       Map<String, dynamic> data = {
-        // 'invoice': invoice.text,
-        // 'serial_number':  serialNumber.text,
-        // 'model':  model.text,
-        // 'chno':  chno.text,
-        // 'controller': controller.text,
-        // 'motor':motor.text,
-        // 'battery_no': batteryNo.text,
-        // 'charge':  charge.text,
-        // 'purchase_date': purchaseDate.text,
-        // 'customer_name':  customerName.text,
-        // 'phone_number':  phoneNumber.text,
-        // 'email': email.text,
-        // 'address': address.text,
+        "type": selectedCategory.value,
         for (var entry in activeControllers.entries) ...{
           if (entry.key == "Invoice No") "invoice": entry.value.text,
           if (entry.key == "S.no") "serial_number": entry.value.text,
           if (entry.key == "Model") "model": entry.value.text,
           if (entry.key == "Chase No") "chno": entry.value.text,
+          if (entry.key == "Controller") "controller": entry.value.text,
+          if (entry.key == "Motor") "motor": entry.value.text,
+          if (entry.key == "Battery") "battery_no": entry.value.text,
+          if (entry.key == "Charger") "charge": entry.value.text,
+          if (entry.key == "Purchase Date") "purchase_date": entry.value.text,
+          if (entry.key == "Customer Name") "customer_name": entry.value.text,
+          if (entry.key == "Phone No") "phone_number": entry.value.text,
+          if (entry.key == "Email Id") "email": entry.value.text,
+          if (entry.key == "Address") "address": entry.value.text,
+          if (entry.key == "Remarks") "remark": entry.value.text,
         }
       };
 
@@ -132,13 +130,15 @@ class LoginController extends GetxController implements GetxService {
       update();
 
       Response? response = await loginRepo.registration(body: data);
-      if (response != null && response.statusCode == 200) {
-        // loginModel = LoginModel.fromJson(response.body);
+      if (response != null && response.statusCode == 201) {
+        loginModel = LoginModel.fromJson(response.body);
+        activeControllers.forEach((key, controller) {
+          controller.clear();
+        });
       }
-      activeControllers.forEach((key, controller) {
-        // controller.clear();
-      });
-      // _isLoading = false;
+
+      _isLoading = false;
+      update();
     }
   }
 

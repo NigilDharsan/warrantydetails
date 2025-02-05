@@ -55,7 +55,6 @@ class ApiClient extends GetxService {
       http.Response response = await http
           .get(
             Uri.parse(appBaseUrl! + uri),
-            headers: headers ?? _getmainHeaders,
           )
           .timeout(Duration(seconds: timeoutInSeconds));
       // printLog("-----getData response: ${response.body}");
