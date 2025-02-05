@@ -1,11 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
+
+import '../Dashboard/Model/WarrantyListModel.dart';
+import '../Dashboard/controller/warranty_controller.dart';
 
 class Warrantydetails extends StatefulWidget {
   const Warrantydetails({super.key});
@@ -15,18 +19,43 @@ class Warrantydetails extends StatefulWidget {
 }
 
 class _WarrantydetailsState extends State<Warrantydetails> {
-  final Map<String, String> details = {
-    'S.NO': '1',
-    'Model': 'XYZ123',
-    'CH.No': 'CH-4567',
-    'Motor': 'Motor123',
-    'Controller': 'Con-3456',
-    // 'Charge': 'Fast Charge',
-    // 'Battery.No': 'BAT-1122',
-    'Customer Name': 'Raja',
-    'Address': '1/123, Raja Street',
-    'Phone Number': '+91-9876543210',
+  // Define selectedCategory with a default value
+  var selectedCategory = "Vehicle".obs;
+
+  // Define activeControllers as a map of TextEditingController
+  final Map<String, TextEditingController> activeControllers = {
+    "Invoice No": TextEditingController(),
+    "S.no": TextEditingController(),
+    "Model": TextEditingController(),
+    "Chase No": TextEditingController(),
+    "Controller": TextEditingController(),
+    "Motor": TextEditingController(),
+    "Battery": TextEditingController(),
+    "Charger": TextEditingController(),
+    "Purchase Date": TextEditingController(),
+    "Customer Name": TextEditingController(),
+    "Phone No": TextEditingController(),
+    "Email Id": TextEditingController(),
+    "Address": TextEditingController(),
+    "Remarks": TextEditingController(),
   };
+
+  Map<String, dynamic> get data {
+    return {
+      "type": selectedCategory.value,
+      for (var entry in activeControllers.entries)
+        if (entry.key == "S.no")
+          "serial_number": entry.value.text
+        else if (entry.key == "Model")
+          "model": entry.value.text
+        else if (entry.key == "Chase No")
+            "chno": entry.value.text
+          else if (entry.key == "Customer Name")
+              "customer_name": entry.value.text
+            else if (entry.key == "Phone No")
+                "phone_number": entry.value.text
+    };
+  }
 
   bool _isDownloading = false;
 
@@ -53,155 +82,164 @@ class _WarrantydetailsState extends State<Warrantydetails> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
+      body: GetBuilder<WarrantyController>(
+        initState: (state) => Get.find<WarrantyController>()
+            .getWarrantyData(), // Called when the controller is initialized
+        builder: (controller) {
+          return MainUI(context, controller, controller.warrantyData);
+        },
+      ),
+    );
+  }
+
+  Widget MainUI(BuildContext context, WarrantyController controller, WarrantyData warrantyData) {
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Dealer',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
                         ),
+                        Text('${warrantyData.address}'),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Customer',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                        Text('${warrantyData.customerName}'),
+                        const SizedBox(height: 15),
+                        Divider(color: Colors.grey),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 10),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Description',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Items',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Divider(color: Colors.grey),
+                        ...data.entries.map((entry) {
+                          return Column(
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      entry.key,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      entry.value,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black54,
+                                      ),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(color: Colors.grey),
+                            ],
+                          );
+                        }).toList(),
                       ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Dealer',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                          const Text('Raja Street, Coimbatore'),
-                          const SizedBox(height: 10),
-                          const Text(
-                            'Customer',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                          const Text('Gandhi Street, Chennai'),
-                          const SizedBox(height: 15),
-                          Divider(color: Colors.grey),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 10),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    'Description',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    'Items',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Divider(color: Colors.grey),
-                          ...details.entries.map((entry) {
-                            return Column(
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      flex: 2,
-                                      child: Text(
-                                        entry.key,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 2,
-                                      child: Text(
-                                        entry.value,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black54,
-                                        ),
-                                        textAlign: TextAlign.left,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(color: Colors.grey),
-                              ],
-                            );
-                          }).toList(),
-                        ],
-                      ),
-                    ),
                   ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            top: 30, // Adjust this value as needed
-            right: 50, // Adjust for horizontal positioning
-            child: Row(
-              // Use Row to position buttons side by side
-              children: [
-                IconButton(
-                  onPressed: _generateAndDownloadPDF,
-                  icon: const Icon(Icons.download, color: Colors.blue),
-                  tooltip: 'Download & Share PDF',
                 ),
-                IconButton(
-                  onPressed: () => _confirmDelete(context),
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  tooltip: 'Delete',
-                ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
-          if (_isDownloading)
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
-        ],
-      ),
+        ),
+        Positioned(
+          top: 30,
+          right: 50,
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: _generateAndDownloadPDF,
+                icon: const Icon(Icons.download, color: Colors.blue),
+                tooltip: 'Download & Share PDF',
+              ),
+              IconButton(
+                onPressed: () => _confirmDelete(context),
+                icon: const Icon(Icons.delete, color: Colors.red),
+                tooltip: 'Delete',
+              ),
+            ],
+          ),
+        ),
+        if (_isDownloading)
+          const Center(
+            child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.red),),
+          ),
+      ],
     );
   }
 
@@ -273,56 +311,29 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                     ],
                   ),
                 ),
+                pw.Text('Warranty Details', style: pw.TextStyle(fontSize: 18)),
                 pw.SizedBox(height: 15),
-                pw.Divider(),
-                ...details.entries.map((entry) {
-                  return pw.Column(
+                ...data.entries.map((entry) {
+                  return pw.Row(
                     children: [
-                      // pw.Row(
-                      //   mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
-                      //   crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      //   children: [
-                      //     pw.Text(
-                      //       entry.key,
-                      //       style: pw.TextStyle(
-                      //         fontWeight: pw.FontWeight.bold,
-                      //         fontSize: 12,
-                      //       ),
-                      //     ),
-                      //     pw.Text(
-                      //       entry.value,
-                      //       style: pw.TextStyle(fontSize: 12),
-                      //     ),
-                      //   ],
-                      // ),
-                      pw.Row(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Expanded(
-                            flex: 2,
-                            child: pw.Text(
-                              entry.key,
-                              style: pw.TextStyle(
-                                fontWeight: pw.FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                          pw.Expanded(
-                            flex: 2,
-                            child: pw.Text(
-                              entry.value,
-                              style: pw.TextStyle(
-                                fontSize: 14,
-                                color: const PdfColor.fromInt(
-                                    0xFF666666), // Equivalent to black54
-                              ),
-                              textAlign: pw.TextAlign.left,
-                            ),
-                          ),
-                        ],
+                      pw.Expanded(
+                        flex: 2,
+                        child: pw.Text(
+                          entry.key,
+                          style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold, fontSize: 14),
+                        ),
                       ),
-                      pw.Divider(),
+                      pw.Expanded(
+                        flex: 2,
+                        child: pw.Text(
+                          entry.value,
+                          style: pw.TextStyle(
+                              fontSize: 14,
+                              color: const PdfColor(0.5, 0.5, 0.5)),
+                          textAlign: pw.TextAlign.left,
+                        ),
+                      ),
                     ],
                   );
                 }).toList(),
@@ -333,15 +344,12 @@ class _WarrantydetailsState extends State<Warrantydetails> {
       );
 
       final output = await getExternalStorageDirectory();
-      final filePath = '${output!.path}/customer_details.pdf';
+      final filePath = '${output!.path}/warranty_details.pdf';
       final file = File(filePath);
       await file.writeAsBytes(await pdf.save());
 
-      await Share.shareXFiles(
-        [XFile(filePath)],
-        text: 'Customer details PDF is attached.',
-      );
-
+      await Share.shareXFiles([XFile(filePath)],
+          text: 'Warranty details PDF is attached.');
       _showSnackbar('PDF downloaded and shared successfully!');
     } catch (e) {
       _showSnackbar('Error generating PDF: $e');
@@ -367,7 +375,7 @@ class _WarrantydetailsState extends State<Warrantydetails> {
             onPressed: () {
               Navigator.of(context).pop();
               setState(() {
-                details.clear();
+                data.clear();
               });
               _showSnackbar('Details deleted successfully!');
             },
@@ -380,10 +388,6 @@ class _WarrantydetailsState extends State<Warrantydetails> {
 
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 3),
-      ),
-    );
+        SnackBar(content: Text(message), duration: const Duration(seconds: 3)));
   }
 }

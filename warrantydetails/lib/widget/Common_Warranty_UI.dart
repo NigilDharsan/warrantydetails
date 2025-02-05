@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class EditableRow extends StatelessWidget {
+class EditableRow extends StatefulWidget {
   final String label;
   final TextEditingController textController;
   final String selectedCategory;
@@ -13,6 +14,11 @@ class EditableRow extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _EditableRowState createState() => _EditableRowState();
+}
+
+class _EditableRowState extends State<EditableRow> {
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -20,27 +26,61 @@ class EditableRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label,
+            widget.label,
             style: const TextStyle(
               color: Colors.red,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 5),
-          TextFormField(
-            controller: textController,
+          widget.label == "Purchase Date"
+              ? InkWell(
+            onTap: () async {
+              DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+              );
+              if (pickedDate != null) {
+                setState(() {
+                  widget.textController.text =
+                      DateFormat('yyyy-MM-dd').format(pickedDate);
+                });
+              }
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red[50],
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.black, width: 1),
+              ),
+              child: Text(
+                widget.textController.text.isEmpty
+                    ? "YYYY-MM-DD"
+                    : widget.textController.text,
+                style: TextStyle(fontSize: 14, color: Colors.red[400]),
+              ),
+            ),
+          )
+              : TextFormField(
+            controller: widget.textController,
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.red[50],
               contentPadding: const EdgeInsets.all(12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.red[100] ?? Colors.red),
+                borderSide: BorderSide(
+                    color: Colors.red[100] ?? Colors.red),
               ),
             ),
             style: TextStyle(fontSize: 14, color: Colors.red[400]),
             validator: (value) {
-              return _getValidationMessage(value, label, selectedCategory);
+              return _getValidationMessage(
+                  value, widget.label, widget.selectedCategory);
             },
           ),
         ],
@@ -88,14 +128,13 @@ class EditableRow extends StatelessWidget {
       ],
     };
 
-    // Only validate the fields in the selected category
     if (fields[category]?.contains(label) ?? false) {
       if (value == null || value.isEmpty) {
         return 'Please enter $label';
       }
 
-      // Specific validations for "Email id" and "Phone No"
-      if (label == "Email id" && !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+      if (label == "Email id" &&
+          !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
         return 'Please enter a valid email address';
       }
 
@@ -104,6 +143,6 @@ class EditableRow extends StatelessWidget {
       }
     }
 
-    return null; // Return null if no validation errors
+    return null;
   }
 }
