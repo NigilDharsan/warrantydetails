@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/response/response.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:warrantydetails/src/Login/Model/LoginModel.dart';
 import 'package:warrantydetails/src/Login/repository/login_repo.dart';
 
@@ -101,10 +98,11 @@ class LoginController extends GetxController implements GetxService {
     _isLoading = false;
     update();
   }
+
   Future<void> submitData() async {
     if (formKey.currentState!.validate()) {
-      Map<String,
-          TextEditingController> activeControllers = getActiveControllers();
+      Map<String, TextEditingController> activeControllers =
+          getActiveControllers();
       Map<String, dynamic> data = {
         // 'invoice': invoice.text,
         // 'serial_number':  serialNumber.text,
@@ -119,8 +117,12 @@ class LoginController extends GetxController implements GetxService {
         // 'phone_number':  phoneNumber.text,
         // 'email': email.text,
         // 'address': address.text,
-        for (var entry in activeControllers.entries) entry.key: entry.value
-            .text,
+        for (var entry in activeControllers.entries) ...{
+          if (entry.key == "Invoice No") "invoice": entry.value.text,
+          if (entry.key == "S.no") "serial_number": entry.value.text,
+          if (entry.key == "Model") "model": entry.value.text,
+          if (entry.key == "Chase No") "chno": entry.value.text,
+        }
       };
 
       print("Submitted Data: $data");
@@ -129,9 +131,8 @@ class LoginController extends GetxController implements GetxService {
       _isLoading = true;
       update();
 
-      Response? response = await loginRepo.registration(body:data);
+      Response? response = await loginRepo.registration(body: data);
       if (response != null && response.statusCode == 200) {
-
         // loginModel = LoginModel.fromJson(response.body);
       }
       activeControllers.forEach((key, controller) {
@@ -140,6 +141,7 @@ class LoginController extends GetxController implements GetxService {
       // _isLoading = false;
     }
   }
+
   Map<String, TextEditingController> getActiveControllers() {
     switch (selectedCategory.value) {
       case "Vehicle":
@@ -152,7 +154,6 @@ class LoginController extends GetxController implements GetxService {
         return {};
     }
   }
-
 
 //   Future<void> submitData() async {
 //     if (formKey.currentState!.validate()) {
