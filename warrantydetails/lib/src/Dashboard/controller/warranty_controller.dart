@@ -4,15 +4,13 @@ import 'package:warrantydetails/src/Dashboard/repository/warranty_repo.dart';
 
 class WarrantyController extends GetxController implements GetxService {
   final WarrantyRepo warrantyRepo;
-  var warrantyData = WarrantyData(); // Initialize this with some default or fetched data
-
 
   WarrantyController({required this.warrantyRepo});
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   bool hasMoreItems = true;
-
+  var warrantyData = WarrantyData();
   WarrantyListModel? warrantyListData;
 
   Future<void> getWarrantyData() async {

@@ -101,7 +101,8 @@ class _DashboardState extends State<Dashboard> {
                     decoration: InputDecoration(
                       hintText: "Search for items...",
                       hintStyle: const TextStyle(color: Colors.redAccent),
-                      prefixIcon: const Icon(Icons.search, color: Colors.redAccent),
+                      prefixIcon:
+                          const Icon(Icons.search, color: Colors.redAccent),
                       filled: true,
                       fillColor: Colors.red[50],
                       contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -123,27 +124,25 @@ class _DashboardState extends State<Dashboard> {
               ],
             ),
 
-            // Loading Indicator
-            if (controller.isLoading) // Assuming you have a loading boolean
-              const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                ),
-              )
-            else
-              ListView.builder(
-                shrinkWrap: true, // Allows ListView to size itself based on content
-                physics: const NeverScrollableScrollPhysics(), // Prevents nested scrolling
-                itemCount: controller.warrantyListData?.data?.length ?? 0,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Get.to(() => const Warrantydetails());
-                    },
-                    child: warrantyListItems(controller.warrantyListData!.data![index]),
-                  );
-                },
-              ),
+            ListView.builder(
+              shrinkWrap:
+                  true, // Allows ListView to size itself based on content
+              physics:
+                  const NeverScrollableScrollPhysics(), // Prevents nested scrolling
+              itemCount: controller.warrantyListData?.data?.length ?? 0,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    controller.warrantyData =
+                        controller.warrantyListData?.data?[index];
+                    controller.update();
+                    Get.to(() => const Warrantydetails());
+                  },
+                  child: warrantyListItems(
+                      controller.warrantyListData!.data![index]),
+                );
+              },
+            ),
           ],
         ),
       ),

@@ -2,13 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 
-import '../Dashboard/Model/WarrantyListModel.dart';
 import '../Dashboard/controller/warranty_controller.dart';
 
 class Warrantydetails extends StatefulWidget {
@@ -19,41 +17,17 @@ class Warrantydetails extends StatefulWidget {
 }
 
 class _WarrantydetailsState extends State<Warrantydetails> {
-  // Define selectedCategory with a default value
-  var selectedCategory = "Vehicle".obs;
-
-  // Define activeControllers as a map of TextEditingController
-  final Map<String, TextEditingController> activeControllers = {
-    "Invoice No": TextEditingController(),
-    "S.no": TextEditingController(),
-    "Model": TextEditingController(),
-    "Chase No": TextEditingController(),
-    "Controller": TextEditingController(),
-    "Motor": TextEditingController(),
-    "Battery": TextEditingController(),
-    "Charger": TextEditingController(),
-    "Purchase Date": TextEditingController(),
-    "Customer Name": TextEditingController(),
-    "Phone No": TextEditingController(),
-    "Email Id": TextEditingController(),
-    "Address": TextEditingController(),
-    "Remarks": TextEditingController(),
-  };
-
   Map<String, dynamic> get data {
     return {
-      "type": selectedCategory.value,
-      for (var entry in activeControllers.entries)
-        if (entry.key == "S.no")
-          "serial_number": entry.value.text
-        else if (entry.key == "Model")
-          "model": entry.value.text
-        else if (entry.key == "Chase No")
-            "chno": entry.value.text
-          else if (entry.key == "Customer Name")
-              "customer_name": entry.value.text
-            else if (entry.key == "Phone No")
-                "phone_number": entry.value.text
+      "type": Get.find<WarrantyController>().warrantyData.type ?? "",
+      "serial_number":
+          Get.find<WarrantyController>().warrantyData.serialNumber ?? "",
+      "model": Get.find<WarrantyController>().warrantyData.model ?? "",
+      "chno": Get.find<WarrantyController>().warrantyData.chno ?? "",
+      "customer_name":
+          Get.find<WarrantyController>().warrantyData.customerName ?? "",
+      "phone_number":
+          Get.find<WarrantyController>().warrantyData.phoneNumber ?? ""
     };
   }
 
@@ -83,16 +57,17 @@ class _WarrantydetailsState extends State<Warrantydetails> {
         ),
       ),
       body: GetBuilder<WarrantyController>(
-        initState: (state) => Get.find<WarrantyController>()
-            .getWarrantyData(), // Called when the controller is initialized
         builder: (controller) {
-          return MainUI(context, controller, controller.warrantyData);
+          return MainUI(context, controller);
         },
       ),
     );
   }
 
-  Widget MainUI(BuildContext context, WarrantyController controller, WarrantyData warrantyData) {
+  Widget MainUI(
+    BuildContext context,
+    WarrantyController controller,
+  ) {
     return Stack(
       children: [
         SingleChildScrollView(
@@ -127,7 +102,7 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                             color: Colors.red,
                           ),
                         ),
-                        Text('${warrantyData.address}'),
+                        Text('${controller.warrantyData.address}'),
                         const SizedBox(height: 10),
                         const Text(
                           'Customer',
@@ -137,7 +112,7 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                             color: Colors.red,
                           ),
                         ),
-                        Text('${warrantyData.customerName}'),
+                        Text('${controller.warrantyData.customerName}'),
                         const SizedBox(height: 15),
                         Divider(color: Colors.grey),
                         Container(
@@ -194,7 +169,7 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                                   Expanded(
                                     flex: 2,
                                     child: Text(
-                                      entry.value,
+                                      "${entry.value}",
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: Colors.black54,
@@ -237,7 +212,9 @@ class _WarrantydetailsState extends State<Warrantydetails> {
         ),
         if (_isDownloading)
           const Center(
-            child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.red),),
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+            ),
           ),
       ],
     );
@@ -273,7 +250,7 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                     color: const PdfColor.fromInt(0xFF0000), // Red color
                   ),
                 ),
-                pw. SizedBox(height: 15),
+                pw.SizedBox(height: 15),
                 pw.Divider(color: const PdfColor(0.5, 0.5, 0.5)),
                 pw.Container(
                   decoration: pw.BoxDecoration(
