@@ -25,4 +25,19 @@ class WarrantyController extends GetxController implements GetxService {
     _isLoading = false;
     update();
   }
+
+  Future<void> deleteWarrantyData() async {
+    _isLoading = true;
+    update();
+
+    Response? response = await warrantyRepo.deleteWarrantyList();
+    if (response != null && response.statusCode == 200) {
+      warrantyListData = WarrantyListModel.fromJson(response.body);
+    }
+
+    _isLoading = false;
+    update();
+  }
+
+
 }

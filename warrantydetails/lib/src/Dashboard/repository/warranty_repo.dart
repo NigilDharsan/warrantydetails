@@ -10,4 +10,7 @@ class WarrantyRepo {
   Future<Response?> getWarrantyList() async {
     return await apiClient.getData(AppConstants.registrationUrl);
   }
+  Future<Response?> deleteWarrantyList() async {
+    return await apiClient.deleteData(AppConstants.registrationUrl);
+  }
 }
