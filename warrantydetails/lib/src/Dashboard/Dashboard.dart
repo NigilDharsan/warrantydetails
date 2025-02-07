@@ -4,6 +4,7 @@ import 'package:warrantydetails/src/Dashboard/controller/warranty_controller.dar
 import 'package:warrantydetails/src/Dashboard/widget/warrantyListItem.dart';
 import 'package:warrantydetails/src/Login/loginScreen.dart';
 import 'package:warrantydetails/src/WarrantyDetails/warrantyDetails.dart';
+import 'package:warrantydetails/utils/images.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -13,21 +14,12 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final List<String> _items = [
-    // 'Vehicle',
-    // 'Auto',
-    // 'Car',
-    // 'Bike',
-    // 'Travels',
-  ];
-
   final TextEditingController _searchController = TextEditingController();
   List<String> _filteredItems = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredItems = _items; // Initially show all items.
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -40,16 +32,8 @@ class _DashboardState extends State<Dashboard> {
 
   void _onSearchChanged() {
     final query = _searchController.text.trim();
-    setState(() {
-      if (query.isEmpty) {
-        _filteredItems = _items; // Show all items if search is empty.
-      } else {
-        _filteredItems = _items
-            .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-        _filteredItems.sort(); // Sort alphabetically.
-      }
-    });
+
+    Get.find<WarrantyController>().getWarrantyData(query, 1, 10);
   }
 
   @override
@@ -78,7 +62,8 @@ class _DashboardState extends State<Dashboard> {
         ),
         body: GetBuilder<WarrantyController>(
             initState: (state) => Get.find<WarrantyController>()
-                .getWarrantyData(), // Called when the controller is initialized
+                .getWarrantyData(
+                    "", 1, 10), // Called when the controller is initialized
             builder: (controller) {
               return MainUI(context, controller);
             }),
@@ -124,25 +109,34 @@ class _DashboardState extends State<Dashboard> {
               ],
             ),
 
-            ListView.builder(
-              shrinkWrap:
-                  true, // Allows ListView to size itself based on content
-              physics:
-                  const NeverScrollableScrollPhysics(), // Prevents nested scrolling
-              itemCount: controller.warrantyListData?.data?.length ?? 0,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    controller.warrantyData =
-                        controller.warrantyListData?.data?[index];
-                    controller.update();
-                    Get.to(() => const Warrantydetails());
-                  },
-                  child: warrantyListItems(
-                      controller.warrantyListData!.data![index]),
-                );
-              },
-            ),
+            controller.warrantyListData?.data?.length == 0
+                ? SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: Image.asset(
+                      Images.noDataFound, // Replace with your image asset path
+                      width: 200.0, // Set the width of the image
+                      height: 200.0, // Set the height of the image
+                    ),
+                  )
+                : ListView.builder(
+                    shrinkWrap:
+                        true, // Allows ListView to size itself based on content
+                    physics:
+                        const NeverScrollableScrollPhysics(), // Prevents nested scrolling
+                    itemCount: controller.warrantyListData?.data?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          controller.warrantyData =
+                              controller.warrantyListData?.data?[index];
+                          controller.update();
+                          Get.to(() => const Warrantydetails());
+                        },
+                        child: warrantyListItems(
+                            controller.warrantyListData!.data![index]),
+                      );
+                    },
+                  ),
           ],
         ),
       ),

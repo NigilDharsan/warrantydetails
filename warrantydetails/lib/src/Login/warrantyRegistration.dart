@@ -149,7 +149,7 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
                           print("Submit button clicked"); // Debugging
                           await controller.submitData(); // Call the function
                           if (controller.loginModel?.status == "True") {
-                            customSnackBar(controller.loginModel?.message,
+                            customSnackBar("Warranty Registration Successfully",
                                 isError: false);
                             Get.back();
                           } else {
