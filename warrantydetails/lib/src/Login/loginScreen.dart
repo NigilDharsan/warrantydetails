@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:warrantydetails/src/Dashboard/Dashboard.dart';
 import 'package:warrantydetails/src/Login/controller/login_controller.dart';
 import 'package:warrantydetails/src/Login/warrantyRegistration.dart';
@@ -18,6 +19,7 @@ class Loginscreen extends StatefulWidget {
 class _LoginscreenState extends State<Loginscreen> {
   bool islogin = true;
   final _formKey = GlobalKey<FormState>();
+  bool _passwordVisible = false;
 
   bool isValidEmail(String email) {
     final RegExp emailRegex = RegExp(
@@ -387,7 +389,8 @@ class _LoginscreenState extends State<Loginscreen> {
                                                     child: TextFormField(
                                                       controller: controller
                                                           .signInPasswordController,
-                                                      obscureText: true,
+                                                      obscureText: !_passwordVisible,
+                                                      // obscureText: true,
                                                       decoration:
                                                           InputDecoration(
                                                         icon: const Icon(
@@ -401,6 +404,19 @@ class _LoginscreenState extends State<Loginscreen> {
                                                                 fontSize: 16,
                                                                 color: Colors
                                                                     .grey[500]),
+                                                            suffixIcon: IconButton(
+                                                              icon: Icon(
+                                                                _passwordVisible
+                                                                    ? Icons.visibility_off
+                                                                    : Icons.visibility,
+                                                              ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  _passwordVisible = !_passwordVisible;
+                                                                });
+                                                              },
+                                                              color: Colors.red,
+                                                            ),
                                                       ),
                                                       validator: (value) {
                                                         if (value == null ||
@@ -420,11 +436,10 @@ class _LoginscreenState extends State<Loginscreen> {
                                           ),
                                         ),
                                       ),
-// Login button
+                                     // Login button
                                       Positioned(
                                         left:
-                                            MediaQuery.of(context).size.width *
-                                                0.31,
+                                            MediaQuery.of(context).size.width * 0.31,
                                         bottom: 20,
                                         child: Align(
                                           alignment: Alignment(0, 40),
@@ -447,22 +462,31 @@ class _LoginscreenState extends State<Loginscreen> {
                                                             ?.validate() ??
                                                         false) {
                                                       await controller.login();
+
                                                       if (controller.loginModel
                                                               ?.status ==
                                                           "True") {
+                                                        SharedPreferences
+                                                            prefs =
+                                                            await SharedPreferences
+                                                                .getInstance();
+                                                        await prefs.setBool(
+                                                            "isLoggedIn", true);
                                                         customSnackBar(
                                                             controller
-                                                                .loginModel
-                                                                ?.message,
-                                                            isError: true);
+                                                                    .loginModel
+                                                                    ?.message ??
+                                                                "Login Successful",
+                                                            isError: false);
+                                                        // Get.offAllNamed('/dash');
                                                         Get.offAll(() =>
-                                                            const Dashboard());
+                                                            const Dashboard()); // Navigate to Dashboard
                                                       } else {
                                                         customSnackBar(
                                                             'Invalid email or password',
                                                             isError: true);
                                                       }
-                                                    } else {}
+                                                    }
                                                   },
                                                   elevation: 2,
                                                   child: Text(
