@@ -342,19 +342,25 @@ class _WarrantydetailsState extends State<Warrantydetails> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Confirmation'),
-        content: const Text('Are you sure you want to delete this content?'),
+        content: const Text('Are you sure you want to delete this Details?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
-              setState(() {
-                data.clear();
-              });
-              _showSnackbar('Details deleted successfully!');
+              await Get.find<WarrantyController>().deleteWarrantyData(
+                  Get.find<WarrantyController>().warrantyData.id ?? 0);
+
+              if (Get.find<WarrantyController>().successModelData?.status ==
+                  'True') {
+                Get.find<WarrantyController>().getWarrantyData("", 1, 10);
+                _showSnackbar('Warranty Details deleted successfully!');
+
+                Get.back();
+              } else {}
             },
             child: const Text('Delete'),
           ),

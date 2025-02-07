@@ -51,10 +51,12 @@ Widget warrantyListItems(WarrantyData warrantyData) {
               'Model: ${warrantyData.model}',
               style: TextStyle(fontSize: 14),
             ),
-            Text(
-              'CHNO: ${warrantyData.chno}',
-              style: TextStyle(fontSize: 14),
-            ),
+            warrantyData.chno != null
+                ? Text(
+                    'CHNO: ${warrantyData.chno}',
+                    style: TextStyle(fontSize: 14),
+                  )
+                : SizedBox(),
             SizedBox(
               height: 20,
               child: customDottedLine(),

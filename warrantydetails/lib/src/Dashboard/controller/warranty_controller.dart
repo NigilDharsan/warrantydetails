@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:warrantydetails/src/Dashboard/Model/WarrantyListModel.dart';
 import 'package:warrantydetails/src/Dashboard/repository/warranty_repo.dart';
+import 'package:warrantydetails/src/Login/Model/LoginModel.dart';
 
 class WarrantyController extends GetxController implements GetxService {
   final WarrantyRepo warrantyRepo;
@@ -12,12 +13,15 @@ class WarrantyController extends GetxController implements GetxService {
   bool hasMoreItems = true;
   var warrantyData = WarrantyData();
   WarrantyListModel? warrantyListData;
+  LoginModel? successModelData;
 
-  Future<void> getWarrantyData() async {
+  Future<void> getWarrantyData(
+      String searchText, int page, int pageSize) async {
     _isLoading = true;
     update();
 
-    Response? response = await warrantyRepo.getWarrantyList();
+    Response? response =
+        await warrantyRepo.getWarrantyList(searchText, page, pageSize);
     if (response != null && response.statusCode == 200) {
       warrantyListData = WarrantyListModel.fromJson(response.body);
     }
@@ -26,18 +30,18 @@ class WarrantyController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> deleteWarrantyData() async {
+  Future<void> deleteWarrantyData(int itemID) async {
     _isLoading = true;
     update();
 
-    Response? response = await warrantyRepo.deleteWarrantyList();
+    Response? response = await warrantyRepo.deleteWarrantyItem(itemID);
     if (response != null && response.statusCode == 200) {
-      warrantyListData = WarrantyListModel.fromJson(response.body);
+      successModelData = LoginModel.fromJson(response.body);
+    } else {
+      successModelData = LoginModel.fromJson(response?.body);
     }
 
     _isLoading = false;
     update();
   }
-
-
 }

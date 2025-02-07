@@ -7,10 +7,14 @@ class WarrantyRepo {
 
   WarrantyRepo({required this.apiClient});
 
-  Future<Response?> getWarrantyList() async {
-    return await apiClient.getData(AppConstants.registrationUrl);
+  Future<Response?> getWarrantyList(
+      String searchText, int page, int pageSize) async {
+    return await apiClient.getData(AppConstants.registrationUrl +
+        "?serial_number=$searchText&page=$page&page_size=$pageSize");
   }
-  Future<Response?> deleteWarrantyList() async {
-    return await apiClient.deleteData(AppConstants.registrationUrl);
+
+  Future<Response?> deleteWarrantyItem(int itemID) async {
+    return await apiClient
+        .deleteData(AppConstants.registrationUrl + "/$itemID");
   }
 }
