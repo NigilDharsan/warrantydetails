@@ -45,7 +45,6 @@ dependencies:
   intl:
   shared_preferences:
   dropdown_button2:
-  calendar_date_picker2:
 
 dev_dependencies:
   flutter_test:
