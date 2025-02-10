@@ -35,54 +35,64 @@ class _EditableRowState extends State<EditableRow> {
           const SizedBox(height: 5),
           widget.label == "Purchase Date"
               ? InkWell(
-            onTap: () async {
-              DateTime? pickedDate = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2100),
-              );
-              if (pickedDate != null) {
-                setState(() {
-                  widget.textController.text =
-                      DateFormat('yyyy-MM-dd').format(pickedDate);
-                });
-              }
-            },
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red[50],
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black, width: 1),
-              ),
-              child: Text(
-                widget.textController.text.isEmpty
-                    ? "YYYY-MM-DD"
-                    : widget.textController.text,
-                style: TextStyle(fontSize: 14, color: Colors.red[400]),
-              ),
-            ),
-          )
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        widget.textController.text =
+                            DateFormat('yyyy-MM-dd').format(pickedDate);
+                      });
+                    }
+                  },
+                  child: TextFormField(
+                    enabled: false,
+                    controller: widget.textController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.red[50],
+                      contentPadding: const EdgeInsets.all(12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide(color: Colors.red[100] ?? Colors.red),
+                      ),
+                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.red[400]),
+                    validator: (widget.label == "Purchase Date")
+                        ? (value) {
+                            return _getValidationMessage(
+                                value, widget.label, widget.selectedCategory);
+                          }
+                        : null,
+                  ),
+                )
               : TextFormField(
-            controller: widget.textController,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.red[50],
-              contentPadding: const EdgeInsets.all(12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                    color: Colors.red[100] ?? Colors.red),
-              ),
-            ),
-            style: TextStyle(fontSize: 14, color: Colors.red[400]),
-            validator: (value) {
-              return _getValidationMessage(
-                  value, widget.label, widget.selectedCategory);
-            },
-          ),
+                  controller: widget.textController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.red[50],
+                    contentPadding: const EdgeInsets.all(12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          BorderSide(color: Colors.red[100] ?? Colors.red),
+                    ),
+                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.red[400]),
+                  validator: (widget.label == "Invoice No" ||
+                          widget.label == "S.no" ||
+                          widget.label == "Purchase Date")
+                      ? (value) {
+                          return _getValidationMessage(
+                              value, widget.label, widget.selectedCategory);
+                        }
+                      : null,
+                ),
         ],
       ),
     );

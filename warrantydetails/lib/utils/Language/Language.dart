@@ -33,3 +33,14 @@ Future<void> saveLocale(Locale locale) async {
   await prefs.setString('languageCode', locale.languageCode);
   await prefs.setString('countryCode', locale.countryCode ?? '');
 }
+
+Future<void> loggedStatus(bool isLoggedIn) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('isLoggedIn', isLoggedIn);
+}
+
+Future<bool> getLoggedStatus() async {
+  final prefs = await SharedPreferences.getInstance();
+  final status = prefs.getBool('isLoggedIn') ?? false;
+  return status;
+}

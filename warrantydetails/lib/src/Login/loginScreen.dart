@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:warrantydetails/src/Dashboard/Dashboard.dart';
 import 'package:warrantydetails/src/Login/controller/login_controller.dart';
 import 'package:warrantydetails/src/Login/warrantyRegistration.dart';
@@ -19,7 +18,7 @@ class Loginscreen extends StatefulWidget {
 class _LoginscreenState extends State<Loginscreen> {
   bool islogin = true;
   final _formKey = GlobalKey<FormState>();
-  bool _passwordVisible = false;
+  bool _passwordVisible = true;
 
   bool isValidEmail(String email) {
     final RegExp emailRegex = RegExp(
@@ -389,7 +388,8 @@ class _LoginscreenState extends State<Loginscreen> {
                                                     child: TextFormField(
                                                       controller: controller
                                                           .signInPasswordController,
-                                                      obscureText: !_passwordVisible,
+                                                      obscureText:
+                                                          _passwordVisible,
                                                       // obscureText: true,
                                                       decoration:
                                                           InputDecoration(
@@ -404,19 +404,22 @@ class _LoginscreenState extends State<Loginscreen> {
                                                                 fontSize: 16,
                                                                 color: Colors
                                                                     .grey[500]),
-                                                            suffixIcon: IconButton(
-                                                              icon: Icon(
-                                                                _passwordVisible
-                                                                    ? Icons.visibility_off
-                                                                    : Icons.visibility,
-                                                              ),
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  _passwordVisible = !_passwordVisible;
-                                                                });
-                                                              },
-                                                              color: Colors.red,
-                                                            ),
+                                                        suffixIcon: IconButton(
+                                                          icon: Icon(
+                                                            _passwordVisible
+                                                                ? Icons
+                                                                    .visibility_off
+                                                                : Icons
+                                                                    .visibility,
+                                                          ),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              _passwordVisible =
+                                                                  !_passwordVisible;
+                                                            });
+                                                          },
+                                                          color: Colors.red,
+                                                        ),
                                                       ),
                                                       validator: (value) {
                                                         if (value == null ||
@@ -436,10 +439,12 @@ class _LoginscreenState extends State<Loginscreen> {
                                           ),
                                         ),
                                       ),
-                                     // Login button
+                                      // Login button
                                       Positioned(
                                         left:
-                                            MediaQuery.of(context).size.width * 0.31,
+                                            (MediaQuery.of(context).size.width /
+                                                    2) -
+                                                110,
                                         bottom: 20,
                                         child: Align(
                                           alignment: Alignment(0, 40),
@@ -466,12 +471,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                                       if (controller.loginModel
                                                               ?.status ==
                                                           "True") {
-                                                        SharedPreferences
-                                                            prefs =
-                                                            await SharedPreferences
-                                                                .getInstance();
-                                                        await prefs.setBool(
-                                                            "isLoggedIn", true);
+                                                        loggedStatus(true);
                                                         customSnackBar(
                                                             controller
                                                                     .loginModel
@@ -505,8 +505,8 @@ class _LoginscreenState extends State<Loginscreen> {
                                         ),
                                       ),
                                       Positioned(
-                                        top: 18,
-                                        left: -12,
+                                        top: 20,
+                                        left: 10,
                                         child: Align(
                                           alignment: Alignment.centerLeft,
                                           child: Row(

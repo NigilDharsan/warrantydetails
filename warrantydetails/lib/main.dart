@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:warrantydetails/src/Dashboard/Dashboard.dart';
 import 'package:warrantydetails/src/Login/loginScreen.dart';
 import 'package:warrantydetails/utils/Language/Language.dart';
 import 'package:warrantydetails/utils/Language/LocaleString.dart';
@@ -11,7 +12,7 @@ import 'package:warrantydetails/utils/initial_binding/initial_binding.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Locale initialLocale = await getSavedLocale(); // Load saved locale
-  // Get.put(LoaderController()); // Keep the controller alive
+  bool logged = await getLoggedStatus(); // Load saved locale
 
   final sharedPreferences = await SharedPreferences.getInstance();
   Get.lazyPut(() => sharedPreferences);
@@ -20,13 +21,15 @@ Future<void> main() async {
 
   runApp(MyApp(
     initialLocale: initialLocale,
+    logged: logged,
   ));
 }
 
 class MyApp extends StatelessWidget {
   final Locale initialLocale;
+  final bool logged;
 
-  MyApp({required this.initialLocale});
+  MyApp({required this.initialLocale, required this.logged});
 
   static void setLocale(BuildContext context, Locale locale) {
     Get.updateLocale(locale);
@@ -49,7 +52,7 @@ class MyApp extends StatelessWidget {
       translations: LocaleString(), // Provide translations
       locale: initialLocale, // Default locale
       fallbackLocale: Locale('en', 'US'), // Fallback if locale not found
-      home: Loginscreen(),
+      home: logged == true ? Dashboard() : Loginscreen(),
       // builder: (context, child) {
       //   return Stack(
       //     children: [

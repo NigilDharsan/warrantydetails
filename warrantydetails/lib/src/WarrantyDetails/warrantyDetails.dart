@@ -304,7 +304,7 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                       pw.Expanded(
                         flex: 2,
                         child: pw.Text(
-                          entry.value,
+                          "${entry.value}",
                           style: pw.TextStyle(
                               fontSize: 14,
                               color: const PdfColor(0.5, 0.5, 0.5)),

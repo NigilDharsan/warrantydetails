@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:warrantydetails/src/Dashboard/controller/warranty_controller.dart';
 import 'package:warrantydetails/src/Dashboard/widget/warrantyListItem.dart';
 import 'package:warrantydetails/src/Login/loginScreen.dart';
+import 'package:warrantydetails/src/Login/warrantyRegistration.dart';
 import 'package:warrantydetails/src/WarrantyDetails/warrantyDetails.dart';
+import 'package:warrantydetails/utils/Language/Language.dart';
 import 'package:warrantydetails/utils/images.dart';
-import 'package:filter_list/filter_list.dart';
-
 
 class Dashboard extends StatefulWidget {
   static const routeName = '/dash';
@@ -21,7 +21,6 @@ class _DashboardState extends State<Dashboard> {
   List<User>? selectedUserList = [];
   bool warningShown = false;
   DateTime timeBackPressed = DateTime.now();
-
 
   @override
   void initState() {
@@ -39,6 +38,22 @@ class _DashboardState extends State<Dashboard> {
   void _onSearchChanged() {
     final query = _searchController.text.trim();
     Get.find<WarrantyController>().getWarrantyData(query, 1, 10);
+  }
+
+  void _showLogoutDialog() {
+    Get.defaultDialog(
+      title: "Logout",
+      middleText: "Are you sure you want to logout?",
+      textCancel: "Cancel",
+      textConfirm: "OK",
+      onConfirm: () {
+        loggedStatus(false);
+        Get.offAll(() => const Loginscreen()); // Navigate to Login
+
+        print("User Logged Out");
+      },
+      onCancel: () {},
+    );
   }
 
   @override
@@ -62,7 +77,7 @@ class _DashboardState extends State<Dashboard> {
         }
         return true;
       },
-      child:Scaffold(
+      child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: Colors.red,
@@ -76,7 +91,33 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.logout,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                _showLogoutDialog();
+              },
+            ),
+          ],
         ),
+        floatingActionButton: new FloatingActionButton(
+          backgroundColor: Colors.red,
+          onPressed: () async {
+            var result = await Get.to(Warrantyregistration());
+
+            if (result == true) {
+              Get.find<WarrantyController>().getWarrantyData("", 1, 10);
+            }
+          },
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
         body: GetBuilder<WarrantyController>(
             initState: (state) => Get.find<WarrantyController>()
                 .getWarrantyData(
@@ -87,34 +128,7 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
-  Future<void> openFilterDelegate() async {
-    await FilterListDelegate.show<User>(
-      context: context,
-      list: userList,
-      selectedListData: selectedUserList,
-      theme: FilterListDelegateThemeData(
-        listTileTheme: ListTileThemeData(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          tileColor: Colors.white,
-          selectedTileColor: const Color(0xFF649BEC).withOpacity(.5),
-        ),
-        tileTextStyle: TextStyle(fontSize: 14),
-      ),
-      onItemSearch: (user, query) {
-        return user.name!.toLowerCase().contains(query.toLowerCase());
-      },
-      tileLabel: (user) => user!.name,
-      emptySearchChild: const Center(child: Text('No user found')),
-      searchFieldHint: 'Search Here..',
-      onApplyButtonClick: (list) {
-        setState(() {
-          selectedUserList = list;
-        });
-      },
-    );
-  }
+
   MainUI(context, controller) {
     return SingleChildScrollView(
       child: Padding(
@@ -146,7 +160,7 @@ class _DashboardState extends State<Dashboard> {
                 const SizedBox(width: 10),
                 IconButton(
                   icon: const Icon(Icons.filter_list, color: Colors.redAccent),
-                  onPressed: openFilterDelegate,
+                  onPressed: () {},
                 ),
               ],
             ),
@@ -186,15 +200,20 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
-
 class User {
   final String? name;
   User({this.name});
 }
 
 List<User> userList = [
-  User(name: "invoice", ),
-  User(name: "serial.no", ),
-  User(name: "model.no", ),
+  User(
+    name: "invoice",
+  ),
+  User(
+    name: "serial.no",
+  ),
+  User(
+    name: "model.no",
+  ),
   User(name: "purchase date"),
 ];

@@ -151,7 +151,7 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
                           if (controller.loginModel?.status == "True") {
                             customSnackBar("Warranty Registration Successfully",
                                 isError: false);
-                            Get.back();
+                            Navigator.pop(context, true);
                           } else {
                             customSnackBar(controller.loginModel?.message,
                                 isError: true);
