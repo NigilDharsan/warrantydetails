@@ -21,6 +21,7 @@ class _DashboardState extends State<Dashboard> {
   List<User>? selectedUserList = [];
   bool warningShown = false;
   DateTime timeBackPressed = DateTime.now();
+  bool _isDownloading = false;
 
   @override
   void initState() {
@@ -49,7 +50,6 @@ class _DashboardState extends State<Dashboard> {
       onConfirm: () {
         loggedStatus(false);
         Get.offAll(() => const Loginscreen()); // Navigate to Login
-
         print("User Logged Out");
       },
       onCancel: () {},
@@ -58,7 +58,17 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    return RefreshIndicator(
+        onRefresh: () async {
+          if (_isDownloading) {
+            const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+              ),
+            );
+          }; // Your refresh logic here
+        },
+      child:WillPopScope(
       onWillPop: () async {
         final difference = DateTime.now().difference(timeBackPressed);
         final isExitWarning = difference >= Duration(seconds: 2);
@@ -125,7 +135,7 @@ class _DashboardState extends State<Dashboard> {
             builder: (controller) {
               return MainUI(context, controller);
             }),
-      ),
+      ),),
     );
   }
 

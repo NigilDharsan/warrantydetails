@@ -1,12 +1,12 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
-
+import 'package:open_file/open_file.dart';
 import '../Dashboard/controller/warranty_controller.dart';
 
 class Warrantydetails extends StatefulWidget {
@@ -17,17 +17,30 @@ class Warrantydetails extends StatefulWidget {
 }
 
 class _WarrantydetailsState extends State<Warrantydetails> {
+  final controller = Get.find<WarrantyController>();
+
   Map<String, dynamic> get data {
     return {
-      "type": Get.find<WarrantyController>().warrantyData.type ?? "",
-      "serial_number":
+      "Type": Get.find<WarrantyController>().warrantyData.type ?? "",
+      "Serial Number":
           Get.find<WarrantyController>().warrantyData.serialNumber ?? "",
-      "model": Get.find<WarrantyController>().warrantyData.model ?? "",
-      "chno": Get.find<WarrantyController>().warrantyData.chno ?? "",
-      "customer_name":
+      "Model": Get.find<WarrantyController>().warrantyData.model ?? "",
+      "Ch No": Get.find<WarrantyController>().warrantyData.chno ?? "",
+      "Customer Name":
           Get.find<WarrantyController>().warrantyData.customerName ?? "",
-      "phone_number":
-          Get.find<WarrantyController>().warrantyData.phoneNumber ?? ""
+      "Phone Number":
+          Get.find<WarrantyController>().warrantyData.phoneNumber ?? "",
+      "Invoice": Get.find<WarrantyController>().warrantyData.invoice ?? "",
+      "Controller":
+          Get.find<WarrantyController>().warrantyData.controller ?? "",
+      "Motor": Get.find<WarrantyController>().warrantyData.motor ?? "",
+      "Battery No": Get.find<WarrantyController>().warrantyData.batteryNo ?? "",
+      "Charger": Get.find<WarrantyController>().warrantyData.charge ?? "",
+      "Purchase Date":
+          Get.find<WarrantyController>().warrantyData.purchaseDate ?? "",
+      "Email": Get.find<WarrantyController>().warrantyData.email ?? "",
+      "Address": Get.find<WarrantyController>().warrantyData.address ?? "",
+      "Remark": Get.find<WarrantyController>().warrantyData.remark ?? "",
     };
   }
 
@@ -68,11 +81,10 @@ class _WarrantydetailsState extends State<Warrantydetails> {
     BuildContext context,
     WarrantyController controller,
   ) {
-    return Stack(
-      children: [
+    return
         SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -90,20 +102,54 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                     ],
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Dealer',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.red,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.6,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Dealer',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${controller.warrantyData.address}',
+                                    textAlign: TextAlign.left, // Optional alignment
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Row(
+                              children: [
+                                IconButton(
+                                  color: Colors.green,
+                                  icon: const Icon(Icons.download),
+                                  onPressed: _isDownloading
+                                      ? null
+                                      : _generateAndDownloadPDF,
+                                ),
+                                IconButton(
+                                  color: Colors.red,
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () => _confirmDelete(context),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        Text('${controller.warrantyData.address}'),
-                        const SizedBox(height: 10),
+
+                        const SizedBox(height: 5),
                         const Text(
                           'Customer',
                           style: TextStyle(
@@ -157,7 +203,7 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    flex: 2,
+                                    flex: 1,
                                     child: Text(
                                       entry.key,
                                       style: const TextStyle(
@@ -166,8 +212,9 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                                       ),
                                     ),
                                   ),
+                                  const SizedBox(height: 35),
                                   Expanded(
-                                    flex: 2,
+                                    flex: 1,
                                     child: Text(
                                       "${entry.value}",
                                       style: const TextStyle(
@@ -187,44 +234,18 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 50),
               ],
             ),
           ),
-        ),
-        Positioned(
-          top: 30,
-          right: 50,
-          child: Row(
-            children: [
-              IconButton(
-                onPressed: _generateAndDownloadPDF,
-                icon: const Icon(Icons.download, color: Colors.blue),
-                tooltip: 'Download & Share PDF',
-              ),
-              IconButton(
-                onPressed: () => _confirmDelete(context),
-                icon: const Icon(Icons.delete, color: Colors.red),
-                tooltip: 'Delete',
-              ),
-            ],
-          ),
-        ),
-        if (_isDownloading)
-          const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-            ),
-          ),
-      ],
-    );
+        );
+
   }
 
   Future<void> _generateAndDownloadPDF() async {
     setState(() {
       _isDownloading = true;
     });
-
     try {
       final pdf = pw.Document();
       pdf.addPage(
@@ -233,23 +254,36 @@ class _WarrantydetailsState extends State<Warrantydetails> {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text(
-                  'From: Raja Street, Coimbatore',
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
-                    color: const PdfColor.fromInt(0xFF0000), // Red color
+                pw.Align(
+                  alignment: pw.Alignment.center,
+                  child: pw.Text(
+                    'Warranty Details',
+                    style: pw.TextStyle(
+                      fontSize: 18,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
                   ),
                 ),
-                pw.SizedBox(height: 5),
+                pw.SizedBox(height: 15),
                 pw.Text(
-                  'To: Gandhi Street, Chennai',
+                  'Dealer',
                   style: pw.TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: pw.FontWeight.bold,
-                    color: const PdfColor.fromInt(0xFF0000), // Red color
+                    color: PdfColors.red,
                   ),
                 ),
+                pw.Text(controller.warrantyData.address ?? ''),
+                pw.SizedBox(height: 10),
+                pw.Text(
+                  'Customer',
+                  style: pw.TextStyle(
+                    fontSize: 13,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.red,
+                  ),
+                ),
+                pw.Text('${controller.warrantyData.customerName}'),
                 pw.SizedBox(height: 15),
                 pw.Divider(color: const PdfColor(0.5, 0.5, 0.5)),
                 pw.Container(
@@ -288,8 +322,7 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                     ],
                   ),
                 ),
-                pw.Text('Warranty Details', style: pw.TextStyle(fontSize: 18)),
-                pw.SizedBox(height: 15),
+                pw.SizedBox(height: 20),
                 ...data.entries.map((entry) {
                   return pw.Row(
                     children: [
@@ -301,6 +334,7 @@ class _WarrantydetailsState extends State<Warrantydetails> {
                               fontWeight: pw.FontWeight.bold, fontSize: 14),
                         ),
                       ),
+                      pw.SizedBox(height: 40),
                       pw.Expanded(
                         flex: 2,
                         child: pw.Text(
@@ -319,15 +353,21 @@ class _WarrantydetailsState extends State<Warrantydetails> {
           },
         ),
       );
-
-      final output = await getExternalStorageDirectory();
-      final filePath = '${output!.path}/warranty_details.pdf';
-      final file = File(filePath);
-      await file.writeAsBytes(await pdf.save());
-
-      await Share.shareXFiles([XFile(filePath)],
-          text: 'Warranty details PDF is attached.');
-      _showSnackbar('PDF downloaded and shared successfully!');
+      final directory = await getApplicationDocumentsDirectory();
+      final downloadsDirectory = Directory('${directory.path}/Download');
+      if (!downloadsDirectory.existsSync()) {
+        downloadsDirectory.createSync(recursive: true);
+      }
+      final formattedDate =
+          DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+      final pdfPath = '${downloadsDirectory.path}/warranty_$formattedDate.pdf';
+      final pdfFile = File(pdfPath);
+      await pdfFile.writeAsBytes(await pdf.save());
+      print('PDF saved to: $pdfPath');
+      _showDownloadDialog(context, pdfPath);
+      // await Share.shareXFiles([XFile(pdfPath)],
+      //     text: 'Warranty details PDF is attached.');
+      // _showSnackbar('PDF downloaded and shared successfully!');
     } catch (e) {
       _showSnackbar('Error generating PDF: $e');
     } finally {
@@ -373,4 +413,31 @@ class _WarrantydetailsState extends State<Warrantydetails> {
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), duration: const Duration(seconds: 3)));
   }
+}
+
+void _showDownloadDialog(BuildContext context, String filePath) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text("Download Complete"),
+        content: Text("PDF has been saved to:\n$filePath"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("Close"),
+          ),
+          TextButton(
+            onPressed: () {
+              OpenFile.open(filePath); // Open the PDF file
+              Navigator.of(context).pop();
+            },
+            child: Text("Open File"),
+          ),
+        ],
+      );
+    },
+  );
 }

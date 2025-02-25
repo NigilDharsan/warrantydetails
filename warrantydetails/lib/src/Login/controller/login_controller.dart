@@ -2,74 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:warrantydetails/src/Login/Model/LoginModel.dart';
 import 'package:warrantydetails/src/Login/repository/login_repo.dart';
+import 'package:warrantydetails/utils/Language/Language.dart';
 
 class LoginController extends GetxController implements GetxService {
   final LoginRepo loginRepo;
 
   LoginController({required this.loginRepo});
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  // bool _isLoading = false;
+  // bool get isLoading => _isLoading;
+  // bool hasMoreItems = true;
+  final _isLoading = false.obs;
+  bool get isLoading => _isLoading.value;
   bool hasMoreItems = true;
-
+  void setLoading(bool value) {
+    _isLoading.value = value;
+    update(); // Notify UI
+  }
   LoginModel? loginModel;
 
   var signInEmailController = TextEditingController();
   var signInPasswordController = TextEditingController();
-
-  var selectedCategory = "Vehicle".obs;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  var selectedCategory = "Vehicle".obs;
+  var categories = <String>["Vehicle", "Battery", "Charger"].obs;
 
-  var invoice = TextEditingController();
-  var serialNumber = TextEditingController();
-  var model = TextEditingController();
-  var chno = TextEditingController();
-  var controller = TextEditingController();
-  var motor = TextEditingController();
-  var batteryNo = TextEditingController();
-  var charge = TextEditingController();
-  var purchaseDate = TextEditingController();
-  var customerName = TextEditingController();
-  var phoneNumber = TextEditingController();
-  var email = TextEditingController();
-  var address = TextEditingController();
-
-  List<String> categories = ["Vehicle", "Charger", "Battery"];
 
   Map<String, Map<String, TextEditingController>> categoryFields = {
+
     "Vehicle": {
-      'Invoice No': TextEditingController(),
-      'S.no': TextEditingController(),
+      'invoice': TextEditingController(),
+      'Serial Number': TextEditingController(),
       'Model': TextEditingController(),
-      'Chase No': TextEditingController(),
+      'Chase Number': TextEditingController(),
       'Controller': TextEditingController(),
       'Motor': TextEditingController(),
-      'Battery': TextEditingController(),
+      'battery_number': TextEditingController(),
       'Charger': TextEditingController(),
       'Purchase Date': TextEditingController(),
       'Customer Name': TextEditingController(),
-      'Phone No': TextEditingController(),
+      'Phone Number': TextEditingController(),
       'Email id': TextEditingController(),
       'Address': TextEditingController(),
     },
     "Battery": {
-      'Invoice No': TextEditingController(),
-      'S.no': TextEditingController(),
+      'invoice': TextEditingController(),
+      'Serial Number': TextEditingController(),
       'Remarks': TextEditingController(),
       'Model': TextEditingController(),
       'Purchase Date': TextEditingController(),
       'Customer Name': TextEditingController(),
-      'Phone No': TextEditingController(),
+      'Phone Number': TextEditingController(),
       'Email id': TextEditingController(),
       'Address': TextEditingController(),
     },
     "Charger": {
-      'Invoice No': TextEditingController(),
-      'S.no': TextEditingController(),
+      'invoice': TextEditingController(),
+      'Serial Number': TextEditingController(),
       'Model': TextEditingController(),
       'Purchase Date': TextEditingController(),
       'Customer Name': TextEditingController(),
-      'Phone No': TextEditingController(),
+      'Phone Number': TextEditingController(),
       'Email id': TextEditingController(),
       'Address': TextEditingController(),
     }
@@ -83,9 +76,9 @@ class LoginController extends GetxController implements GetxService {
 
   Future<void> login() async {
     _hideKeyboard();
-    _isLoading = true;
+    setLoading(true) ;
     update();
-
+    await Future.delayed(Duration(seconds: 2));
     Response? response = await loginRepo.login(
         email: signInEmailController.value.text,
         password: signInPasswordController.value.text);
@@ -95,7 +88,7 @@ class LoginController extends GetxController implements GetxService {
       loginModel = LoginModel.fromJson(response.body);
     }
 
-    _isLoading = false;
+    setLoading(false);
     update();
   }
 
@@ -106,17 +99,17 @@ class LoginController extends GetxController implements GetxService {
       Map<String, dynamic> data = {
         "type": selectedCategory.value,
         for (var entry in activeControllers.entries) ...{
-          if (entry.key == "Invoice No") "invoice": entry.value.text,
-          if (entry.key == "S.no") "serial_number": entry.value.text,
+          if (entry.key == "invoice") "invoice": entry.value.text,
+          if (entry.key == "Serial Number ") "serial_number": entry.value.text,
           if (entry.key == "Model") "model": entry.value.text,
-          if (entry.key == "Chase No") "chno": entry.value.text,
+          if (entry.key == "Chase Number") "chno": entry.value.text,
           if (entry.key == "Controller") "controller": entry.value.text,
           if (entry.key == "Motor") "motor": entry.value.text,
-          if (entry.key == "Battery") "battery_no": entry.value.text,
+          if (entry.key == "battery_number") "battery_no": entry.value.text,
           if (entry.key == "Charger") "charge": entry.value.text,
           if (entry.key == "Purchase Date") "purchase_date": entry.value.text,
           if (entry.key == "Customer Name") "customer_name": entry.value.text,
-          if (entry.key == "Phone No") "phone_number": entry.value.text,
+          if (entry.key == "Phone Number") "phone_number": entry.value.text,
           if (entry.key == "Email Id") "email": entry.value.text,
           if (entry.key == "Address") "address": entry.value.text,
           if (entry.key == "Remarks") "remark": entry.value.text,
@@ -126,7 +119,7 @@ class LoginController extends GetxController implements GetxService {
       print("Submitted Data: $data");
 
       _hideKeyboard();
-      _isLoading = true;
+      setLoading(true);
       update();
 
       Response? response = await loginRepo.registration(body: data);
@@ -137,13 +130,15 @@ class LoginController extends GetxController implements GetxService {
         });
       }
 
-      _isLoading = false;
+      setLoading(false);
       update();
     }
   }
 
   Map<String, TextEditingController> getActiveControllers() {
-    switch (selectedCategory.value) {
+    String category = selectedCategory.value;
+
+    switch (category) {
       case "Vehicle":
         return vehicle;
       case "Battery":
@@ -151,8 +146,15 @@ class LoginController extends GetxController implements GetxService {
       case "Charger":
         return charger;
       default:
-        return {};
+        return vehicle;
     }
+  }
+
+
+  void changeLanguage(String lang) {
+    Locale locale = Locale(lang);
+    Get.updateLocale(locale);
+    saveLocale(locale);
   }
 
 //   Future<void> submitData() async {

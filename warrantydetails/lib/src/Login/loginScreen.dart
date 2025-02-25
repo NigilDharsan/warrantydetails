@@ -7,9 +7,11 @@ import 'package:warrantydetails/src/Login/warrantyRegistration.dart';
 import 'package:warrantydetails/src/Login/widget/loginClipper.dart';
 import 'package:warrantydetails/utils/Language/Language.dart';
 import 'package:warrantydetails/widget/custom_snackbar.dart';
+import '../../utils/Language/Language.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class Loginscreen extends StatefulWidget {
-  const Loginscreen({super.key});
+  const   Loginscreen({super.key});
 
   @override
   State<Loginscreen> createState() => _LoginscreenState();
@@ -19,6 +21,8 @@ class _LoginscreenState extends State<Loginscreen> {
   bool islogin = true;
   final _formKey = GlobalKey<FormState>();
   bool _passwordVisible = true;
+  bool _isDownloading = false;
+
 
   bool isValidEmail(String email) {
     final RegExp emailRegex = RegExp(
@@ -27,20 +31,18 @@ class _LoginscreenState extends State<Loginscreen> {
     return emailRegex.hasMatch(email);
   }
 
-  Future<void> _changeLanguage(Language language) async {
-    Locale locale = Locale(language.languageCode);
-    await saveLocale(locale); // Save selected locale
-    Get.updateLocale(locale);
-  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.red,
-        resizeToAvoidBottomInset: true,
-        body: GetBuilder<LoginController>(builder: (controller) {
-          return MainUI(context, controller);
-        }));
+      backgroundColor: Colors.red,
+      resizeToAvoidBottomInset: true,
+      body: GetBuilder<LoginController>(builder: (controller) {
+        return MainUI(context, controller);
+      }),
+    );
+
   }
 
   Widget MainUI(BuildContext context, LoginController controller) {
@@ -88,12 +90,10 @@ class _LoginscreenState extends State<Loginscreen> {
                           hint: Text(
                             Language.languageList()
                                 .firstWhere(
-                                  (test) =>
-                                      test.languageCode ==
-                                      (Get.locale?.languageCode ?? "en"),
-                                  orElse: () => Language(0, "", "", ""),
-                                )
-                                .name,
+                                  (test) => test.languageCode == (Get.locale?.languageCode ?? "en"),
+                              orElse: () => Language(1, '', '', ''), // Fallback if no match found
+                            )
+                                .name, // Translate language name
                             style: const TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 14,
@@ -101,23 +101,28 @@ class _LoginscreenState extends State<Loginscreen> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          onChanged: (Language? language) {
+                          onChanged: (Language? language) async {
                             if (language != null) {
-                              _changeLanguage(language);
+                               Locale locale = Locale(language.languageCode);
+                              // controller.changeLanguage(language as String); // Update language in controller
+                              await saveLocale(locale);
+                              Get.updateLocale(locale); // Apply new locale
                             }
                           },
                           items: Language.languageList().map((lang) {
                             return DropdownMenuItem<Language>(
                               value: lang,
-                              child: Text(lang.name),
+                              child: Text(lang.name), // Translate language name
                             );
                           }).toList(),
                         ),
                       ),
+
                     ),
                   ],
                 ),
-                Container(
+                AnimatedContainer(
+                  duration: const Duration(seconds: 0),
                   width: MediaQuery.sizeOf(context).width,
                   // height: 550,
                   color: Colors.red,
@@ -188,7 +193,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                                         ),
                                                         SizedBox(height: 5),
                                                         RichText(
-                                                          text: TextSpan(
+                                                          text: TextSpan(                       
                                                             text:
                                                                 'warranty_message'
                                                                     .tr,
@@ -424,10 +429,10 @@ class _LoginscreenState extends State<Loginscreen> {
                                                       validator: (value) {
                                                         if (value == null ||
                                                             value.isEmpty) {
-                                                          return "Enter Your Password";
+                                                          return "enter_password".tr;
                                                         }
                                                         if (value.length < 6) {
-                                                          return "Password must be at least 6 characters";
+                                                          return "valid_password".tr;
                                                         }
                                                         return null;
                                                       },
@@ -442,9 +447,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                       // Login button
                                       Positioned(
                                         left:
-                                            (MediaQuery.of(context).size.width /
-                                                    2) -
-                                                110,
+                                            (MediaQuery.of(context).size.width / 2) - 110,
                                         bottom: 20,
                                         child: Align(
                                           alignment: Alignment(0, 40),
@@ -467,7 +470,6 @@ class _LoginscreenState extends State<Loginscreen> {
                                                             ?.validate() ??
                                                         false) {
                                                       await controller.login();
-
                                                       if (controller.loginModel
                                                               ?.status ==
                                                           "True") {
@@ -489,7 +491,11 @@ class _LoginscreenState extends State<Loginscreen> {
                                                     }
                                                   },
                                                   elevation: 2,
-                                                  child: Text(
+                                                  child: Obx(() => controller.isLoading
+                                                      ? CircularProgressIndicator(
+                                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                                  )
+                                                      :Text(
                                                     "login".tr,
                                                     style: GoogleFonts.roboto(
                                                       fontWeight:
@@ -497,7 +503,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                                       fontSize: 13,
                                                       color: Colors.white,
                                                     ),
-                                                  ),
+                                                  ),),
                                                 ),
                                               ),
                                             ],
@@ -505,8 +511,8 @@ class _LoginscreenState extends State<Loginscreen> {
                                         ),
                                       ),
                                       Positioned(
-                                        top: 20,
-                                        left: 10,
+                                        top: 15,
+                                        left: 9,
                                         child: Align(
                                           alignment: Alignment.centerLeft,
                                           child: Row(
@@ -531,7 +537,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                                 child: Text(
                                                   'customer'.tr,
                                                   style: GoogleFonts.roboto(
-                                                      fontSize: 14,
+                                                      fontSize: 12,
                                                       color: Colors.black,
                                                       fontWeight:
                                                           FontWeight.bold),

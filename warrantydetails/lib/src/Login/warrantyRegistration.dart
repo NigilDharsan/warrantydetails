@@ -2,7 +2,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:warrantydetails/widget/custom_snackbar.dart';
-
 import '../../widget/Common_Warranty_UI.dart';
 import 'controller/login_controller.dart';
 
@@ -14,28 +13,43 @@ class Warrantyregistration extends StatefulWidget {
 }
 
 class _WarrantyregistrationState extends State<Warrantyregistration> {
+
+  bool _isDownloading = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.red,
-          title: Center(
-            child: Text(
-              'Warranty Registration',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+    return  RefreshIndicator(
+      onRefresh: () async {
+        if (_isDownloading) {
+          const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+            ),
+          );
+        };// Your refresh logic here
+      },
+      child: Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        title: Center(
+          child: Text(
+            'warranty'.tr,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
         ),
-        body: GetBuilder<LoginController>(builder: (controller) {
-          return MainUI(context, controller);
-        }));
+      ),
+      body: GetBuilder<LoginController>(builder: (controller) {
+        return MainUI(context, controller);
+      }),),
+    );
   }
 
   MainUI(context, controller) {
+    print(controller.categories);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -45,7 +59,7 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'Select Your Product',
+                'select your product'.tr,
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.red,
@@ -56,46 +70,34 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
               Obx(
                 () => Container(
                   height: 50,
+                  width: double.infinity,
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     color: Colors.red[50],
                     border: Border.all(color: Colors.black, width: 1),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton2<String>(
-                      value: controller.selectedCategory.value,
-                      isExpanded: true,
-                      dropdownStyleData: DropdownStyleData(
-                        decoration: BoxDecoration(
-                          color: Colors.red[50],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      iconStyleData: IconStyleData(
-                        icon: Icon(Icons.arrow_drop_down, color: Colors.red),
-                      ),
-                      style: TextStyle(color: Colors.red),
+                      value: controller.categories
+                              .contains(controller.selectedCategory.value)
+                          ? controller.selectedCategory.value
+                          : null,
                       items: controller.categories
+                          .toSet()
                           .map<DropdownMenuItem<String>>(
-                              (String category) => DropdownMenuItem<String>(
-                                    value: category,
-                                    child: Text(
-                                      category,
-                                      style: const TextStyle(
-                                          color: Colors.red,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ))
+                            (String category) => DropdownMenuItem<String>(
+                              value: category, // Store raw value
+                              child:
+                                  Text(category.tr), // Display translated text
+                            ),
+                          )
                           .toList(),
                       onChanged: (String? category) {
                         if (category != null) {
                           controller.selectedCategory.value = category;
-                          controller.formKey.currentState
-                              ?.reset(); // Reset form on category change
-                          controller.update(); // Ensure UI updates
-                          print("Category changed to: $category"); // Debugging
+                          controller.update();
+                          controller.formKey.currentState?.reset();
                         }
                       },
                     ),
@@ -106,7 +108,8 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
               Obx(() => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (controller.selectedCategory.value == "Vehicle")
+                      if (controller.selectedCategory.value.isNotEmpty &&
+                          controller.selectedCategory.value == "Vehicle")
                         ...controller.vehicle.entries.map(
                           (entry) => EditableRow(
                             label: entry.key,
@@ -114,7 +117,8 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
                             selectedCategory: controller.selectedCategory.value,
                           ),
                         ),
-                      if (controller.selectedCategory.value == "Battery")
+                      if (controller.selectedCategory.value.isNotEmpty &&
+                          controller.selectedCategory.value == "Battery")
                         ...controller.battery.entries.map(
                           (entry) => EditableRow(
                             label: entry.key,
@@ -122,7 +126,8 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
                             selectedCategory: controller.selectedCategory.value,
                           ),
                         ),
-                      if (controller.selectedCategory.value == "Charger")
+                      if (controller.selectedCategory.value.isNotEmpty &&
+                          controller.selectedCategory.value == "Charger")
                         ...controller.charger.entries.map(
                           (entry) => EditableRow(
                             label: entry.key,
@@ -135,7 +140,6 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
               const SizedBox(height: 20),
               Center(
                 child: GetBuilder<LoginController>(
-                  // Wrap the button in GetBuilder to ensure state updates
                   builder: (controller) {
                     return ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -158,8 +162,8 @@ class _WarrantyregistrationState extends State<Warrantyregistration> {
                           }
                         }
                       },
-                      child: const Text(
-                        "Submit",
+                      child: Text(
+                        "Submit".tr,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,

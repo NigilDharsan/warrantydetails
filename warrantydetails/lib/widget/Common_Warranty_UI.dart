@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class EditableRow extends StatefulWidget {
@@ -26,7 +27,7 @@ class _EditableRowState extends State<EditableRow> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.label,
+            widget.label.tr,
             style: const TextStyle(
               color: Colors.red,
               fontWeight: FontWeight.bold,
@@ -84,14 +85,10 @@ class _EditableRowState extends State<EditableRow> {
                     ),
                   ),
                   style: TextStyle(fontSize: 14, color: Colors.red[400]),
-                  validator: (widget.label == "Invoice No" ||
-                          widget.label == "S.no" ||
-                          widget.label == "Purchase Date")
-                      ? (value) {
-                          return _getValidationMessage(
-                              value, widget.label, widget.selectedCategory);
-                        }
-                      : null,
+                  validator: (value) {
+                    return _getValidationMessage(
+                        value, widget.label, widget.selectedCategory);
+                  },
                 ),
         ],
       ),
@@ -101,38 +98,38 @@ class _EditableRowState extends State<EditableRow> {
   String? _getValidationMessage(String? value, String label, String category) {
     Map<String, List<String>> fields = {
       "Vehicle": [
-        'Invoice No',
-        'S.no',
+        'invoice',
+        'Serial Number',
         'Model',
-        'Chase No',
+        'Chase Number',
         'Controller',
         'Motor',
-        'Battery',
+        'battery_number',
         'Charger',
         'Purchase Date',
         'Customer Name',
-        'Phone No',
+        'Phone Number',
         'Email id',
         'Address'
       ],
       "Battery": [
-        'Invoice No',
-        'S.no',
+        'invoice',
+        'Serial Number',
         'Remarks',
         'Model',
         'Purchase Date',
         'Customer Name',
-        'Phone No',
+        'Phone Number',
         'Email id',
         'Address'
       ],
       "Charger": [
-        'Invoice No',
-        'S.no',
+        'invoice',
+        'Serial Number',
         'Model',
         'Purchase Date',
         'Customer Name',
-        'Phone No',
+        'Phone Number',
         'Email id',
         'Address'
       ],
@@ -140,16 +137,16 @@ class _EditableRowState extends State<EditableRow> {
 
     if (fields[category]?.contains(label) ?? false) {
       if (value == null || value.isEmpty) {
-        return 'Please enter $label';
+        return "${'please_enter_your'.tr} ${label.tr}";
       }
 
       if (label == "Email id" &&
           !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-        return 'Please enter a valid email address';
+        return 'Please enter a valid email address'.tr;
       }
 
       if (label == "Phone No" && !RegExp(r'^[0-9]{10}$').hasMatch(value)) {
-        return 'Please enter a valid 10-digit phone number';
+        return 'Please enter a valid 10-digit phone number'.tr;
       }
     }
 
