@@ -85,10 +85,17 @@ class _EditableRowState extends State<EditableRow> {
                     ),
                   ),
                   style: TextStyle(fontSize: 14, color: Colors.red[400]),
-                  validator: (value) {
-                    return _getValidationMessage(
-                        value, widget.label, widget.selectedCategory);
-                  },
+                  validator: (widget.label == "invoice" ||
+                          widget.label == "Serial Number" ||
+                          widget.label == "Model" ||
+                          widget.label == "Chase Number" ||
+                          widget.label == "Customer Name" ||
+                          widget.label == "Phone Number")
+                      ? (value) {
+                          return _getValidationMessage(
+                              value, widget.label, widget.selectedCategory);
+                        }
+                      : null,
                 ),
         ],
       ),
@@ -145,7 +152,7 @@ class _EditableRowState extends State<EditableRow> {
         return 'Please enter a valid email address'.tr;
       }
 
-      if (label == "Phone No" && !RegExp(r'^[0-9]{10}$').hasMatch(value)) {
+      if (label == "Phone Number" && !RegExp(r'^[0-9]{10}$').hasMatch(value)) {
         return 'Please enter a valid 10-digit phone number'.tr;
       }
     }

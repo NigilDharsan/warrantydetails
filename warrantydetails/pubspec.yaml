@@ -45,6 +45,7 @@ dependencies:
   intl:
   shared_preferences:
   dropdown_button2:
+  open_file:
 
 dev_dependencies:
   flutter_test:

@@ -7,11 +7,9 @@ import 'package:warrantydetails/src/Login/warrantyRegistration.dart';
 import 'package:warrantydetails/src/Login/widget/loginClipper.dart';
 import 'package:warrantydetails/utils/Language/Language.dart';
 import 'package:warrantydetails/widget/custom_snackbar.dart';
-import '../../utils/Language/Language.dart';
-import 'package:flutter_localization/flutter_localization.dart';
 
 class Loginscreen extends StatefulWidget {
-  const   Loginscreen({super.key});
+  const Loginscreen({super.key});
 
   @override
   State<Loginscreen> createState() => _LoginscreenState();
@@ -23,15 +21,12 @@ class _LoginscreenState extends State<Loginscreen> {
   bool _passwordVisible = true;
   bool _isDownloading = false;
 
-
   bool isValidEmail(String email) {
     final RegExp emailRegex = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
     );
     return emailRegex.hasMatch(email);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +37,6 @@ class _LoginscreenState extends State<Loginscreen> {
         return MainUI(context, controller);
       }),
     );
-
   }
 
   Widget MainUI(BuildContext context, LoginController controller) {
@@ -90,9 +84,12 @@ class _LoginscreenState extends State<Loginscreen> {
                           hint: Text(
                             Language.languageList()
                                 .firstWhere(
-                                  (test) => test.languageCode == (Get.locale?.languageCode ?? "en"),
-                              orElse: () => Language(1, '', '', ''), // Fallback if no match found
-                            )
+                                  (test) =>
+                                      test.languageCode ==
+                                      (Get.locale?.languageCode ?? "en"),
+                                  orElse: () => Language(1, '', '',
+                                      ''), // Fallback if no match found
+                                )
                                 .name, // Translate language name
                             style: const TextStyle(
                               fontFamily: 'Inter',
@@ -103,7 +100,7 @@ class _LoginscreenState extends State<Loginscreen> {
                           ),
                           onChanged: (Language? language) async {
                             if (language != null) {
-                               Locale locale = Locale(language.languageCode);
+                              Locale locale = Locale(language.languageCode);
                               // controller.changeLanguage(language as String); // Update language in controller
                               await saveLocale(locale);
                               Get.updateLocale(locale); // Apply new locale
@@ -117,7 +114,6 @@ class _LoginscreenState extends State<Loginscreen> {
                           }).toList(),
                         ),
                       ),
-
                     ),
                   ],
                 ),
@@ -193,7 +189,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                                         ),
                                                         SizedBox(height: 5),
                                                         RichText(
-                                                          text: TextSpan(                       
+                                                          text: TextSpan(
                                                             text:
                                                                 'warranty_message'
                                                                     .tr,
@@ -429,10 +425,12 @@ class _LoginscreenState extends State<Loginscreen> {
                                                       validator: (value) {
                                                         if (value == null ||
                                                             value.isEmpty) {
-                                                          return "enter_password".tr;
+                                                          return "enter_password"
+                                                              .tr;
                                                         }
                                                         if (value.length < 6) {
-                                                          return "valid_password".tr;
+                                                          return "valid_password"
+                                                              .tr;
                                                         }
                                                         return null;
                                                       },
@@ -447,7 +445,9 @@ class _LoginscreenState extends State<Loginscreen> {
                                       // Login button
                                       Positioned(
                                         left:
-                                            (MediaQuery.of(context).size.width / 2) - 110,
+                                            (MediaQuery.of(context).size.width /
+                                                    2) -
+                                                110,
                                         bottom: 20,
                                         child: Align(
                                           alignment: Alignment(0, 40),
@@ -491,19 +491,28 @@ class _LoginscreenState extends State<Loginscreen> {
                                                     }
                                                   },
                                                   elevation: 2,
-                                                  child: Obx(() => controller.isLoading
-                                                      ? CircularProgressIndicator(
-                                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                                  )
-                                                      :Text(
-                                                    "login".tr,
-                                                    style: GoogleFonts.roboto(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 13,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),),
+                                                  child: Obx(
+                                                    () => controller.isLoading
+                                                        ? CircularProgressIndicator(
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                        Color>(
+                                                                    Colors
+                                                                        .white),
+                                                          )
+                                                        : Text(
+                                                            "login".tr,
+                                                            style: GoogleFonts
+                                                                .roboto(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 13,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                  ),
                                                 ),
                                               ),
                                             ],
