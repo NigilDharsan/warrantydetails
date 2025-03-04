@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:warrantydetails/src/Dashboard/Model/WarrantyListModel.dart';
 import 'package:warrantydetails/src/Dashboard/controller/warranty_controller.dart';
 import 'package:warrantydetails/src/Dashboard/widget/warrantyListItem.dart';
 import 'package:warrantydetails/src/Login/loginScreen.dart';
@@ -18,7 +20,6 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final TextEditingController _searchController = TextEditingController();
-  List<User>? selectedUserList = [];
   bool warningShown = false;
   DateTime timeBackPressed = DateTime.now();
   bool _isDownloading = false;
@@ -59,87 +60,103 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-        onRefresh: () async {
-          if (_isDownloading) {
-            const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-              ),
-            );
-          }; // Your refresh logic here
-        },
-      child:WillPopScope(
-      onWillPop: () async {
-        final difference = DateTime.now().difference(timeBackPressed);
-        final isExitWarning = difference >= Duration(seconds: 2);
-        timeBackPressed = DateTime.now();
-        if (isExitWarning) {
-          warningShown = false;
-        }
-        if (!warningShown) {
-          warningShown = true;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Press back again to exit'),
+      onRefresh: () async {
+        if (_isDownloading) {
+          const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
             ),
           );
-          return false;
         }
-        return true;
+        ; // Your refresh logic here
       },
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: Colors.red,
-          title: Center(
-            child: const Text(
-              'Dashboard',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+      child: WillPopScope(
+        onWillPop: () async {
+          final difference = DateTime.now().difference(timeBackPressed);
+          final isExitWarning = difference >= Duration(seconds: 2);
+          timeBackPressed = DateTime.now();
+          if (isExitWarning) {
+            warningShown = false;
+          }
+          if (!warningShown) {
+            warningShown = true;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Press back again to exit'),
+              ),
+            );
+            return false;
+          }
+          return true;
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            backgroundColor: Colors.red,
+            title: Center(
+              child: const Text(
+                'Dashboard',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
+            actions: [
+              IconButton(
+                icon: Icon(
+                  Icons.logout,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  _showLogoutDialog();
+                },
+              ),
+            ],
           ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.logout,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                _showLogoutDialog();
-              },
-            ),
-          ],
-        ),
-        floatingActionButton: new FloatingActionButton(
-          backgroundColor: Colors.red,
-          onPressed: () async {
-            var result = await Get.to(Warrantyregistration());
+          floatingActionButton: new FloatingActionButton(
+            backgroundColor: Colors.red,
+            onPressed: () async {
+              var result = await Get.to(Warrantyregistration());
 
-            if (result == true) {
-              Get.find<WarrantyController>().getWarrantyData("", 1, 10);
-            }
-          },
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
+              if (result == true) {
+                Get.find<WarrantyController>().getWarrantyData("", 1, 10);
+              }
+            },
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
           ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniEndFloat,
+          body: GetBuilder<WarrantyController>(
+              initState: (state) => Get.find<WarrantyController>()
+                  .getWarrantyData(
+                      "", 1, 10), // Called when the controller is initialized
+              builder: (controller) {
+                return MainUI(context, controller);
+              }),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-        body: GetBuilder<WarrantyController>(
-            initState: (state) => Get.find<WarrantyController>()
-                .getWarrantyData(
-                    "", 1, 10), // Called when the controller is initialized
-            builder: (controller) {
-              return MainUI(context, controller);
-            }),
-      ),),
+      ),
     );
   }
 
   MainUI(context, controller) {
+    Map<String, List<WarrantyData>> groupedData = {};
+
+    // Group data by date
+    for (var item in controller.warrantyListData?.data ?? []) {
+      DateTime createdDate = DateTime.parse(item.createdAt);
+      String formattedDate = _formatDate(createdDate);
+
+      if (!groupedData.containsKey(formattedDate)) {
+        groupedData[formattedDate] = [];
+      }
+      groupedData[formattedDate]!.add(item);
+    }
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -174,32 +191,51 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ],
             ),
+            const SizedBox(height: 10),
 
-            controller.warrantyListData?.data?.length == 0
+            // Display grouped lists
+            controller.warrantyListData?.data?.isEmpty ?? true
                 ? SizedBox(
                     height: MediaQuery.of(context).size.height * 0.5,
                     child: Image.asset(
-                      Images.noDataFound, // Replace with your image asset path
-                      width: 200.0, // Set the width of the image
-                      height: 200.0, // Set the height of the image
+                      Images.noDataFound,
+                      width: 200.0,
+                      height: 200.0,
                     ),
                   )
                 : ListView.builder(
-                    shrinkWrap:
-                        true, // Allows ListView to size itself based on content
-                    physics:
-                        const NeverScrollableScrollPhysics(), // Prevents nested scrolling
-                    itemCount: controller.warrantyListData?.data?.length ?? 0,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: groupedData.keys.length,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          controller.warrantyData =
-                              controller.warrantyListData?.data?[index];
-                          controller.update();
-                          Get.to(() => const Warrantydetails());
-                        },
-                        child: warrantyListItems(
-                            controller.warrantyListData!.data![index]),
+                      String date = groupedData.keys.elementAt(index);
+                      List<WarrantyData> items = groupedData[date]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Text(
+                              date,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          ...items.map((item) {
+                            return GestureDetector(
+                              onTap: () {
+                                controller.warrantyData = item;
+                                controller.update();
+                                Get.to(() => const Warrantydetails());
+                              },
+                              child: warrantyListItems(item),
+                            );
+                          }).toList(),
+                        ],
                       );
                     },
                   ),
@@ -210,20 +246,18 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
-class User {
-  final String? name;
-  User({this.name});
-}
+// Helper function to format dates
+String _formatDate(DateTime date) {
+  DateTime now = DateTime.now();
+  DateTime yesterday = now.subtract(Duration(days: 1));
 
-List<User> userList = [
-  User(
-    name: "invoice",
-  ),
-  User(
-    name: "serial.no",
-  ),
-  User(
-    name: "model.no",
-  ),
-  User(name: "purchase date"),
-];
+  if (DateFormat('yyyy-MM-dd').format(date) ==
+      DateFormat('yyyy-MM-dd').format(now)) {
+    return "Today";
+  } else if (DateFormat('yyyy-MM-dd').format(date) ==
+      DateFormat('yyyy-MM-dd').format(yesterday)) {
+    return "Yesterday";
+  } else {
+    return DateFormat('dd MMM yyyy').format(date);
+  }
+}

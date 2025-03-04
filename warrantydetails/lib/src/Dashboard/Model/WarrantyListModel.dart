@@ -77,7 +77,7 @@ class WarrantyData {
       this.purchaseDate,
       this.type,
       this.remark,
-        this.email,
+      this.email,
       this.createdAt});
 
   WarrantyData.fromJson(Map<String, dynamic> json) {
@@ -95,8 +95,8 @@ class WarrantyData {
     phoneNumber = json['phone_number'];
     purchaseDate = json['purchase_date'];
     type = json['type'];
+    email = json['email'];
     remark = json['remark'];
-    email = json['null'];
     createdAt = json['created_at'];
   }
 

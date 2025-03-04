@@ -27,11 +27,13 @@ Widget warrantyListItems(WarrantyData warrantyData) {
           children: [
             Row(
               children: [
-                Text(
-                  'S.no: ${warrantyData.serialNumber}',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Text(
+                    'S.no: ${warrantyData.serialNumber}',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
                 ),
-                Spacer(),
+                SizedBox(width: 10),
                 Container(
                   height: 30,
                   width: 80,
@@ -57,6 +59,10 @@ Widget warrantyListItems(WarrantyData warrantyData) {
                     style: TextStyle(fontSize: 14),
                   )
                 : SizedBox(),
+            Text(
+              'Purchased Date: ${warrantyData.purchaseDate}',
+              style: TextStyle(fontSize: 14),
+            ),
             SizedBox(
               height: 20,
               child: customDottedLine(),

@@ -109,7 +109,7 @@ class LoginController extends GetxController implements GetxService {
           if (entry.key == "Purchase Date") "purchase_date": entry.value.text,
           if (entry.key == "Customer Name") "customer_name": entry.value.text,
           if (entry.key == "Phone Number") "phone_number": entry.value.text,
-          if (entry.key == "Email Id") "email": entry.value.text,
+          if (entry.key == "Email id") "email": entry.value.text,
           if (entry.key == "Address") "address": entry.value.text,
           if (entry.key == "Remarks") "remark": entry.value.text,
         }
