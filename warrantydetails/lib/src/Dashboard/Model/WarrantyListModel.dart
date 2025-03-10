@@ -1,7 +1,7 @@
 class WarrantyListModel {
   int? count;
-  Null? next;
-  Null? previous;
+  String? next;
+  String? previous;
   String? status;
   String? message;
   List<WarrantyData>? data;

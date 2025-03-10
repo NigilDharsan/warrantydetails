@@ -15,19 +15,48 @@ class WarrantyController extends GetxController implements GetxService {
   WarrantyListModel? warrantyListData;
   LoginModel? successModelData;
 
-  Future<void> getWarrantyData(
-      String searchText, int page, int pageSize) async {
-    _isLoading = true;
-    update();
+  // Future<void> getWarrantyData(
+  //     String searchText, int page, int pageSize) async {
+  //   _isLoading = true;
+  //   update();
 
-    Response? response =
-        await warrantyRepo.getWarrantyList(searchText, page, pageSize);
-    if (response != null && response.statusCode == 200) {
-      warrantyListData = WarrantyListModel.fromJson(response.body);
+  //   Response? response =
+  //       await warrantyRepo.getWarrantyList(searchText, page, pageSize);
+  //   if (response != null && response.statusCode == 200) {
+  //     warrantyListData = WarrantyListModel.fromJson(response.body);
+  //   }
+
+  //   _isLoading = false;
+  //   update();
+  // }
+
+  // WarrantyListModel? warrantyListData = WarrantyListModel();
+
+  Future<void> getWarrantyData(String query, int page, int limit) async {
+    try {
+      var response = await warrantyRepo.getWarrantyList(
+          query, page, limit); // Fetch data from API
+
+      if (response != null && response.statusCode == 200) {
+        if (page == 1) {
+          warrantyListData = WarrantyListModel.fromJson(response.body);
+        } else {
+          final newData = WarrantyListModel.fromJson(response.body);
+
+          warrantyListData!.data?.addAll(newData.data ?? []); // Append new data
+        }
+      }
+
+      if (warrantyListData!.data!.length < (warrantyListData?.count ?? 0)) {
+        hasMoreItems = true;
+      } else {
+        hasMoreItems = false;
+      }
+
+      update();
+    } catch (e) {
+      print("Error fetching data: $e");
     }
-
-    _isLoading = false;
-    update();
   }
 
   Future<void> deleteWarrantyData(int itemID) async {
